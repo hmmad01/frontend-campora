@@ -1,46 +1,20 @@
 /**
  * @file FAQPage.tsx
  * @description Halaman FAQ (Frequently Asked Questions) yang menampilkan accordion daftar pertanyaan dan jawaban seputar penyewaan alat outdoor.
+ *              Terkoneksi ke backend Laravel via API.
  */
 
-import { useState } from 'react';
-import { ChevronDown, Mail, MessageCircle } from 'lucide-react';
-import type { FAQItem } from '../../types';
+import { useState, useEffect } from 'react';
+import { ChevronDown, Mail, MessageCircle, Loader2 } from 'lucide-react';
+import { faqApi, type FaqItem } from '../../api';
 
 import imgCamping from '@/images/header FAQ.png';
 
-const FAQ_DATA: FAQItem[] = [
-  {
-    id: 1,
-    question: 'Bagaimana cara menyewa alat camping di website ini?',
-    answer:
-      'pilih perlengkapan yang diinginkan dari katalog, cek ketersediaan pada tanggal yang diinginkan, lalu klik tombol “Hubungi Admin” untuk melakukan konfirmasi melalui WhatsApp. Setelah itu, Anda bisa mengambil barang di lokasi sesuai kesepakatan.',
-  },
-  {
-    id: 2,
-    question: 'Apakah saya bisa mengecek ketersediaan barang sebelum menyewa?',
-    answer:
-      'Ya, Anda bisa langsung melihat status ketersediaan produk di halaman Katalog kami. Untuk kepastian stok real-time, silakan hubungi kami melalui WhatsApp atau email sebelum melakukan pemesanan.',
-  },
-  {
-    id: 3,
-    question: 'Bagaimana sistem pembayaran untuk penyewaan?',
-    answer:
-      'Kami menerima pembayaran melalui transfer bank (BCA, Mandiri, BNI), e-wallet (GoPay, OVO, Dana), serta tunai di tempat. Diperlukan DP 50% untuk mengkonfirmasi dan mengamankan pesanan Anda. Pelunasan dilakukan saat pengambilan barang.',
-  },
-  {
-    id: 4,
-    question: 'Di mana lokasi pengambilan barang? Apakah bisa dikirim?',
-    answer:
-      'Lokasi pengambilan barang kami berada di Jl. Veteran, Kec. Lowokwaru, Malang kota. Kami juga menyediakan layanan pengiriman untuk area Malang Kota dan sekitarnya dengan biaya tambahan yang disesuaikan dengan jarak pengiriman.',
-  },
-  {
-    id: 5,
-    question: 'Apa yang terjadi jika alat rusak atau terlambat dikembalikan?',
-    answer:
-      'Untuk kerusakan ringan akibat penggunaan normal, tidak dikenakan biaya tambahan. Namun untuk kerusakan berat, akan ada biaya perbaikan atau penggantian sesuai perjanjian. Keterlambatan pengembalian dikenakan biaya sewa harian tambahan.',
-  },
-];
+interface FAQDisplayItem {
+  id: number;
+  question: string;
+  answer: string;
+}
 
 function HelpCircleIcon() {
   return (
@@ -57,7 +31,7 @@ function HelpCircleIcon() {
   );
 }
 
-function AccordionItem({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean; onToggle: () => void }) {
+function AccordionItem({ item, isOpen, onToggle }: { item: FAQDisplayItem; isOpen: boolean; onToggle: () => void }) {
   return (
     <div className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${isOpen ? 'border-[#124756]/40' : 'border-black/10'}`}>
       <button
@@ -82,6 +56,28 @@ function AccordionItem({ item, isOpen, onToggle }: { item: FAQItem; isOpen: bool
 
 export default function FAQPage() {
   const [openId, setOpenId] = useState<number | null>(null);
+  const [faqs, setFaqs] = useState<FAQDisplayItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const data = await faqApi.getAll();
+        setFaqs(
+          data.map((f: FaqItem) => ({
+            id: f.id_faq,
+            question: f.pertanyaan,
+            answer: f.jawaban,
+          }))
+        );
+      } catch (err) {
+        console.error('Failed to fetch FAQs:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFaqs();
+  }, []);
 
   const toggle = (id: number) => setOpenId(openId === id ? null : id);
 
@@ -135,16 +131,22 @@ export default function FAQPage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3">
-              {FAQ_DATA.map((item) => (
-                <AccordionItem
-                  key={item.id}
-                  item={item}
-                  isOpen={openId === item.id}
-                  onToggle={() => toggle(item.id)}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="animate-spin text-[#124756]" size={30} />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {faqs.map((item) => (
+                  <AccordionItem
+                    key={item.id}
+                    item={item}
+                    isOpen={openId === item.id}
+                    onToggle={() => toggle(item.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="hidden lg:block">

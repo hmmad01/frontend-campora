@@ -1,11 +1,13 @@
 /**
  * @file AdminLayout.tsx
  * @description Komponen layout untuk panel administrator (Dashboard). Menyediakan sidebar navigasi, topbar profil, dan area konten utama yang dinamis.
+ *              Mengecek session admin dari sessionStorage dan redirect ke login jika belum login.
  */
 
-import { Outlet, NavLink, useNavigate } from "react-router";
-import { LayoutDashboard, Package, Calendar, LogOut, User } from "lucide-react";
-import { FC } from "react";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router";
+import { LayoutDashboard, Package, Calendar, LogOut, User, HelpCircle, MessageSquare, PackageOpen } from "lucide-react";
+import { FC, useEffect, useState } from "react";
+import type { AdminUser } from "../api";
 
 const sidebarNavLinkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
@@ -18,6 +20,9 @@ const sidebarNavItems = [
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/dashboard/kelola-barang", icon: Package, label: "Kelola Barang" },
   { to: "/dashboard/ketersediaan", icon: Calendar, label: "Ketersediaan" },
+  { to: "/dashboard/faq", icon: HelpCircle, label: "Kelola FAQ" },
+  { to: "/dashboard/review", icon: MessageSquare, label: "Kelola Review" },
+  { to: "/dashboard/paket", icon: PackageOpen, label: "Kelola Paket" },
 ];
 
 interface SidebarNavItemProps {
@@ -35,16 +40,43 @@ const SidebarNavItem: FC<SidebarNavItemProps> = ({ to, icon: Icon, label }) => (
 
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [admin, setAdmin] = useState<AdminUser | null>(null);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("admin");
+    if (!stored) {
+      navigate("/admin");
+      return;
+    }
+    try {
+      setAdmin(JSON.parse(stored));
+    } catch {
+      navigate("/admin");
+    }
+  }, [navigate]);
 
   const handleLogout = () => {
+    sessionStorage.removeItem("admin");
     navigate("/admin");
   };
+
+  const getPageTitle = () => {
+    if (location.pathname.includes("kelola-barang")) return "Kelola Barang";
+    if (location.pathname.includes("ketersediaan")) return "Ketersediaan";
+    if (location.pathname.includes("faq")) return "Kelola FAQ";
+    if (location.pathname.includes("review")) return "Kelola Review";
+    if (location.pathname.includes("paket")) return "Kelola Paket";
+    return "Dashboard";
+  };
+
+  if (!admin) return null;
 
   return (
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-gray-900 text-white flex flex-col">
         <div className="p-6">
-          <h1 className="text-xl font-bold">Outdoor Rental</h1>
+          <h1 className="text-xl font-bold">CAMPORA</h1>
           <p className="text-sm text-gray-400 mt-1">Admin Panel</p>
         </div>
 
@@ -68,13 +100,7 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between shadow-sm">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
-              {window.location.pathname.includes("kelola-barang")
-                ? "Kelola Barang"
-                : window.location.pathname.includes("ketersediaan")
-                ? "Ketersediaan"
-                : "Dashboard"}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h2>
           </div>
 
           <div className="flex items-center gap-4">
@@ -83,8 +109,8 @@ export default function AdminLayout() {
                 <User size={18} className="text-white" />
               </div>
               <div className="text-sm">
-                <p className="font-medium text-gray-900">Admin</p>
-                <p className="text-gray-500">Administrator</p>
+                <p className="font-medium text-gray-900">{admin.username}</p>
+                <p className="text-gray-500">{admin.email}</p>
               </div>
             </div>
           </div>

@@ -6,7 +6,16 @@
 import { Link } from 'react-router';
 import { Star } from 'lucide-react';
 import type { Product } from '../types';
-import { CATEGORY_COLORS } from '../data/products';
+
+// Category badge colors — works with both static and API-sourced categories
+const CATEGORY_COLORS: Record<string, string> = {
+  Tenda: 'bg-emerald-100 text-emerald-700',
+  Carrier: 'bg-blue-100 text-blue-700',
+  'Sleeping Bag': 'bg-purple-100 text-purple-700',
+  Perlengkapan: 'bg-yellow-100 text-yellow-700',
+  Pakaian: 'bg-pink-100 text-pink-700',
+  Sepatu: 'bg-orange-100 text-orange-700',
+};
 
 interface Props {
   product: Product;

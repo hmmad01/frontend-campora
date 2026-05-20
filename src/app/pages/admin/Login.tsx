@@ -1,32 +1,41 @@
 /**
  * @file Login.tsx
  * @description Halaman login administrator untuk mengamankan akses ke dashboard manajemen produk dan ketersediaan barang CAMPORA.
+ *              Terkoneksi ke backend Laravel via API.
  */
 
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { authApi } from "../../api";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
     if (!username || !password) {
       setError("Username dan password harus diisi");
       return;
     }
 
-    // Simple validation - in production, this would call an API
-    if (username === "admin" && password === "admin") {
+    setLoading(true);
+    try {
+      const res = await authApi.login(username, password);
+      // Simpan data admin ke sessionStorage
+      sessionStorage.setItem("admin", JSON.stringify(res.data));
       navigate("/dashboard/kelola-barang");
-    } else {
-      setError("Username atau password salah");
+    } catch (err: any) {
+      setError(err.message || "Username atau password salah");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +75,7 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent transition-all"
                 placeholder="Masukkan username"
+                disabled={loading}
               />
             </div>
 
@@ -81,6 +91,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent transition-all pr-12"
                   placeholder="Masukkan password"
+                  disabled={loading}
                 />
                 <button
                   type="button"
@@ -94,14 +105,12 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full bg-[#2F855A] text-white py-3 rounded-xl font-medium hover:bg-[#276749] transition-colors shadow-sm"
+              disabled={loading}
+              className="w-full bg-[#2F855A] text-white py-3 rounded-xl font-medium hover:bg-[#276749] transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Login
+              {loading && <Loader2 size={20} className="animate-spin" />}
+              {loading ? "Memproses..." : "Login"}
             </button>
-
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Demo: username <strong>admin</strong>, password <strong>admin</strong>
-            </p>
           </form>
         </div>
       </div>

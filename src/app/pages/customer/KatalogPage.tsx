@@ -1,18 +1,44 @@
 /**
  * @file KatalogPage.tsx
  * @description Halaman katalog produk sewa yang memiliki fitur pencarian nama barang, filter berdasarkan kategori produk, dan pengurutan (sorting) produk.
+ *              Terkoneksi ke backend Laravel via API.
  */
 
-import { useState } from 'react';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, Filter, ChevronDown, Loader2 } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
-import { products, FILTER_CATEGORIES, SORT_OPTIONS } from '../../data/products';
+import { barangApi, kategoriApi, toProduct, type Kategori } from '../../api';
 import type { Product } from '../../types';
+
+const SORT_OPTIONS = ['Terpopuler', 'Harga Terendah', 'Harga Tertinggi', 'Rating Tertinggi'];
 
 export default function KatalogPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('Semua Kategori');
   const [sort, setSort] = useState('Terpopuler');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [kategoris, setKategoris] = useState<Kategori[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [barangRes, kategoriRes] = await Promise.all([
+          barangApi.getAll({ per_page: 100 }),
+          kategoriApi.getAll(),
+        ]);
+        setProducts(barangRes.data.map(toProduct));
+        setKategoris(kategoriRes);
+      } catch (err) {
+        console.error('Failed to fetch catalog data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filterCategories = ['Semua Kategori', ...kategoris.map((k) => k.nama_kategori)];
 
   const filtered: Product[] = products
     .filter((p) => {
@@ -58,7 +84,7 @@ export default function KatalogPage() {
               onChange={(e) => setCategory(e.target.value)}
               className="appearance-none pl-4 pr-8 py-2.5 border border-gray-200 rounded-xl text-sm outline-none focus:border-[#124756] bg-gray-50 min-w-[160px] cursor-pointer"
             >
-              {FILTER_CATEGORIES.map((c) => (
+              {filterCategories.map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -79,7 +105,12 @@ export default function KatalogPage() {
           </div>
         </div>
       </div>
-      {filtered.length === 0 ? (
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="animate-spin text-[#124756]" size={36} />
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <p className="text-lg">Produk tidak ditemukan</p>
         </div>

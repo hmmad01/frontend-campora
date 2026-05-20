@@ -1,12 +1,15 @@
 /**
  * @file HomePage.tsx
  * @description Halaman utama (Home) aplikasi CAMPORA yang menyajikan hero banner, kategori produk, produk terpopuler, alasan memilih CAMPORA, alur pemesanan (cara sewa), dan testimoni pelanggan.
+ *              Produk populer dimuat dari backend API.
  */
 
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { ChevronRight, Shield, Star, Clock, Package, Award, ShoppingBag, Search, CalendarDays, MessageCircle, MapPin, ThumbsUp, Quote, Tent, Backpack, Flame, Compass } from 'lucide-react';
+import { ChevronRight, Shield, Star, Clock, Package, Award, ShoppingBag, Search, CalendarDays, MessageCircle, MapPin, ThumbsUp, Quote, Tent, Backpack, Flame, Compass, Loader2 } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
-import { products } from '../../data/products';
+import { barangApi, toProduct } from '../../api';
+import type { Product } from '../../types';
 
 import imgTenda from '@/images/logo tenda.png';
 import imgCarrier from '@/images/logo carrier.png';
@@ -330,7 +333,22 @@ export function HeroSection() {
 }
 
 export default function HomePage() {
-  const popularProducts = [...products].sort((a, b) => b.reviews - a.reviews).slice(0, 5);
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    const fetchPopular = async () => {
+      try {
+        const res = await barangApi.getAll({ per_page: 5 });
+        setPopularProducts(res.data.map(toProduct));
+      } catch (err) {
+        console.error('Failed to fetch popular products:', err);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchPopular();
+  }, []);
 
   return (
     <div className="w-full">
@@ -364,11 +382,17 @@ export default function HomePage() {
               Lihat Semua <ChevronRight size={13} />
             </Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-2 px-2 snap-x snap-mandatory scrollbar-hide">
-            {popularProducts.map((product) => (
-              <ProductCard key={product.id} product={product} variant="scroll" />
-            ))}
-          </div>
+          {loadingProducts ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="animate-spin text-[#124756]" size={30} />
+            </div>
+          ) : (
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-2 px-2 snap-x snap-mandatory scrollbar-hide">
+              {popularProducts.map((product) => (
+                <ProductCard key={product.id} product={product} variant="scroll" />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

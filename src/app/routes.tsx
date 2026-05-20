@@ -19,6 +19,9 @@ import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import ProductManagement from './pages/admin/ProductManagement';
 import AvailabilityCalendar from './pages/admin/AvailabilityCalendar';
+import FAQManagement from './pages/admin/FAQManagement';
+import ReviewManagement from './pages/admin/ReviewManagement';
+import PaketManagement from './pages/admin/PaketManagement';
 
 function Layout() {
   return (
@@ -57,6 +60,9 @@ export const router = createBrowserRouter([
       { index: true, Component: Dashboard },
       { path: 'kelola-barang', Component: ProductManagement },
       { path: 'ketersediaan', Component: AvailabilityCalendar },
+      { path: 'faq', Component: FAQManagement },
+      { path: 'review', Component: ReviewManagement },
+      { path: 'paket', Component: PaketManagement },
     ],
   },
 ]);

@@ -1,18 +1,44 @@
 /**
  * @file DetailPage.tsx
  * @description Halaman detail produk untuk menampilkan spesifikasi barang, harga per hari, asuransi, durasi sewa, dan tombol hubungi admin via WhatsApp.
+ *              Terkoneksi ke backend Laravel via API.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeft, Star, Plus, Minus, Check, Shield, Zap } from 'lucide-react';
-import { products } from '../../data/products';
+import { ArrowLeft, Star, Plus, Minus, Check, Shield, Zap, Loader2 } from 'lucide-react';
+import { barangApi, toProduct } from '../../api';
 import { WhatsAppIcon } from '../../components/icons/SocialIcons';
+import type { Product } from '../../types';
 
 export default function DetailPage() {
   const { id } = useParams<{ id: string }>();
-  const product = products.find((p) => p.id === id);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(1);
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchProduct = async () => {
+      try {
+        const barang = await barangApi.getById(Number(id));
+        setProduct(toProduct(barang));
+      } catch (err) {
+        console.error('Failed to fetch product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-20 flex justify-center">
+        <Loader2 className="animate-spin text-[#124756]" size={36} />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -40,7 +66,11 @@ export default function DetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
         <div className="rounded-3xl overflow-hidden shadow-md h-[350px] md:h-[460px] bg-gray-100">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          {product.image ? (
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">Tidak ada gambar</div>
+          )}
         </div>
 
         <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col gap-4">
@@ -52,7 +82,7 @@ export default function DetailPage() {
 
           <div className="flex items-center gap-2">
             <Star size={16} className="text-yellow-400 fill-yellow-400" />
-            <span className="text-sm font-semibold text-gray-800">{product.rating}</span>
+            <span className="text-sm font-semibold text-gray-800">{product.rating.toFixed(1)}</span>
             <span className="text-sm text-gray-400">|</span>
             <span className="text-sm text-gray-500">{product.reviews} ulasan</span>
           </div>
