@@ -369,7 +369,25 @@ export default function ProductManagement() {
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
                   className="hidden"
-                  onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+                      if (!validTypes.includes(file.type)) {
+                        toast.error("Format gambar tidak didukung. Gunakan JPG, PNG, atau WebP.");
+                        e.target.value = ''; // Reset input
+                        return;
+                      }
+                      if (file.size > 2 * 1024 * 1024) {
+                        toast.error("Ukuran gambar maksimal 2MB.");
+                        e.target.value = ''; // Reset input
+                        return;
+                      }
+                      setSelectedFile(file);
+                    } else {
+                      setSelectedFile(null);
+                    }
+                  }}
                 />
               </div>
 
