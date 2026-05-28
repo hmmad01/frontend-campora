@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { authApi } from "../../api";
+import imgLogo from '@/images/logo campora.png';
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -67,22 +68,23 @@ export default function Login() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
       </div>
 
-      <div className="flex-1 flex items-center justify-center bg-white p-8">
-        <div className="w-full max-w-md">
-          <div className="mb-12">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Login</h1>
-            <p className="text-gray-600">Masuk untuk mengelola sistem</p>
+      <div className="flex-1 flex items-center justify-center bg-[#FAFAFA] p-8">
+        <div className="w-full max-w-[400px]">
+          <div className="mb-10 flex flex-col items-center text-center">
+            <img src={imgLogo} alt="CAMPORA" className="h-20 object-contain mb-5" />
+            <h1 className="text-3xl font-extrabold text-[#111827] mb-2 tracking-tight">Admin Login</h1>
+            <p className="text-gray-500 text-[14px]">Masuk untuk mengelola sistem</p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-[13px]">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="username" className="block text-[13px] font-semibold text-gray-800 mb-2">
                 Username
               </label>
               <input
@@ -90,14 +92,14 @@ export default function Login() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-[#F3F4F6] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a4a38]/30 focus:border-[#1a4a38] transition-all text-[14px]"
                 placeholder="Masukkan username"
                 disabled={loading}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-[13px] font-semibold text-gray-800 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -106,19 +108,19 @@ export default function Login() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent transition-all pr-12"
+                  className="w-full px-4 py-3 bg-[#F3F4F6] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a4a38]/30 focus:border-[#1a4a38] transition-all pr-12 text-[14px]"
                   placeholder="Masukkan password"
                   disabled={loading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">
+              <p className="mt-2 text-[11px] text-gray-400 leading-relaxed">
                 Ketentuan: 8-20 karakter, minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 simbol.
               </p>
             </div>
@@ -126,9 +128,9 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2F855A] text-white py-3 rounded-xl font-medium hover:bg-[#276749] transition-colors shadow-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-[#1e583e] text-white py-3 mt-2 rounded-lg text-[14px] font-medium hover:bg-[#15422d] transition-colors shadow flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading && <Loader2 size={20} className="animate-spin" />}
+              {loading && <Loader2 size={18} className="animate-spin" />}
               {loading ? "Memproses..." : "Login"}
             </button>
           </form>
