@@ -240,11 +240,32 @@ export const testimoniApi = {
   /** Admin: create a review directly */
   create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean }) =>
     request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: JSON.stringify(data) }),
-  /** Customer: submit review (pending approval) */
-  submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string }) =>
-    request<{ message: string; data: TestimoniItem }>('/testimonis', { method: 'POST', body: JSON.stringify(data) }),
+  /** Customer: submit review with optional photo (FormData) */
+  submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; foto?: File | null }) => {
+    const fd = new FormData();
+    fd.append('nama_customer', data.nama_customer);
+    fd.append('rating', String(data.rating));
+    fd.append('isi_review', data.isi_review);
+    if (data.produk_disewa) fd.append('produk_disewa', data.produk_disewa);
+    if (data.kegiatan) fd.append('kegiatan', data.kegiatan);
+    if (data.foto) fd.append('foto_customer', data.foto);
+    return request<{ message: string; data: TestimoniItem }>('/testimonis', { method: 'POST', body: fd });
+  },
   update: (id: number, data: Partial<TestimoniItem>) =>
     request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  /** Admin: update review including optional new photo */
+  updateWithFoto: (id: number, data: Partial<TestimoniItem> & { foto?: File | null; remove_foto?: boolean }) => {
+    const fd = new FormData();
+    if (data.nama_customer !== undefined) fd.append('nama_customer', data.nama_customer);
+    if (data.rating !== undefined) fd.append('rating', String(data.rating));
+    if (data.isi_review !== undefined) fd.append('isi_review', data.isi_review);
+    if (data.produk_disewa !== undefined) fd.append('produk_disewa', data.produk_disewa ?? '');
+    if (data.kegiatan !== undefined) fd.append('kegiatan', data.kegiatan ?? '');
+    if (data.is_approved !== undefined) fd.append('is_approved', data.is_approved ? '1' : '0');
+    if (data.foto) fd.append('foto_customer', data.foto);
+    if (data.remove_foto) fd.append('remove_foto', '1');
+    return request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/update`, { method: 'POST', body: fd });
+  },
   approve: (id: number) =>
     request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/approve`, { method: 'PATCH' }),
   unapprove: (id: number) =>
