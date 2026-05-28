@@ -8,6 +8,7 @@ import { Outlet, NavLink, useNavigate, useLocation } from "react-router";
 import { LayoutDashboard, Package, Calendar, LogOut, User, HelpCircle, MessageSquare, PackageOpen } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import type { AdminUser } from "../api";
+import imgLogo from '@/images/logo campora.png';
 
 const sidebarNavLinkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
@@ -75,9 +76,14 @@ export default function AdminLayout() {
   return (
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-gray-900 text-white flex flex-col">
-        <div className="p-6">
-          <h1 className="text-xl font-bold">CAMPORA</h1>
-          <p className="text-sm text-gray-400 mt-1">Admin Panel</p>
+        <div className="p-6 flex items-center gap-3">
+          <div className="bg-white p-1.5 rounded-lg shrink-0">
+            <img src={imgLogo} alt="Campora" className="w-7 h-7 object-contain" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold tracking-wider">CAMPORA</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Admin Panel</p>
+          </div>
         </div>
 
         <nav className="flex-1 px-4 space-y-2">
