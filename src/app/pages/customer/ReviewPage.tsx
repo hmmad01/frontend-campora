@@ -162,8 +162,9 @@ function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
         nama_customer: name.trim(),
         rating,
         isi_review: quote.trim(),
-        produk_disewa: produk.trim() || undefined,
+        produk_disewa: produk || undefined,
         kegiatan: kegiatan.trim() || undefined,
+        foto: avatarFile ?? null,
       });
       setSubmitted(true);
       setTimeout(() => {
