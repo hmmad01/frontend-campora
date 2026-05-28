@@ -7,8 +7,8 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Star, Quote, X, Plus, Send, ImagePlus, Loader2, CheckCircle } from 'lucide-react';
-import { testimoniApi, type TestimoniItem } from '../../api';
+import { Star, Quote, X, Plus, Send, ImagePlus, Loader2, CheckCircle, ChevronDown } from 'lucide-react';
+import { testimoniApi, barangApi, type TestimoniItem } from '../../api';
 
 import imgHero from '@/images/header REVIEW.png';
 
@@ -134,7 +134,14 @@ function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [productList, setProductList] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    barangApi.getAll({ per_page: 100 }).then((res) => {
+      setProductList(res.data.map((b) => b.nama_barang));
+    }).catch(() => {});
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -280,13 +287,19 @@ function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Produk yang disewa</label>
-              <input
-                type="text"
-                value={produk}
-                onChange={(e) => setProduk(e.target.value)}
-                placeholder="e.g. Tenda 4 Orang"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-[13px] focus:outline-none focus:border-[#124756] focus:ring-1 focus:ring-[#124756]/20 transition-colors"
-              />
+              <div className="relative">
+                <select
+                  value={produk}
+                  onChange={(e) => setProduk(e.target.value)}
+                  className="w-full appearance-none px-4 py-2.5 pr-9 rounded-xl border border-gray-300 text-[13px] focus:outline-none focus:border-[#124756] focus:ring-1 focus:ring-[#124756]/20 transition-colors bg-white cursor-pointer"
+                >
+                  <option value="">-- Pilih produk --</option>
+                  {productList.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
             </div>
             <div>
               <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Kegiatan / Trip</label>

@@ -110,6 +110,8 @@ export interface Barang {
   harga_per_hari: string;
   stok_total: number;
   is_aktif: boolean;
+  rating: number;
+  jumlah_review: number;
   created_at: string;
   updated_at: string;
   kategori?: Kategori;
@@ -289,8 +291,8 @@ export function toProduct(b: Barang): Product {
     name: b.nama_barang,
     category: b.kategori?.nama_kategori ?? '',
     price: Number(b.harga_per_hari),
-    rating: 4.5 + Math.random() * 0.5, // placeholder until ratings table exists
-    reviews: Math.floor(50 + Math.random() * 300),
+    rating: b.rating ?? 4.5,
+    reviews: b.jumlah_review ?? 0,
     image: b.fotos?.[0]?.url_foto
       ? (b.fotos[0].url_foto.startsWith('/') ? `http://localhost:8000${b.fotos[0].url_foto}` : b.fotos[0].url_foto)
       : '',
