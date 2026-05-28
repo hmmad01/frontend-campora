@@ -6,11 +6,11 @@
  *              dengan meng-approve / unapprove setiap testimoni.
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Plus, Pencil, Trash2, Loader2, AlertCircle, X, Save,
   Star, MessageSquare, CheckCircle, XCircle, Eye, EyeOff,
-  Filter
+  Filter, ImagePlus, Trash
 } from "lucide-react";
 import { testimoniApi, type TestimoniItem } from "../../api";
 import { useToast, ToastContainer } from "../../components/Toast";
@@ -34,6 +34,11 @@ export default function ReviewManagement() {
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const [fotoFile, setFotoFile] = useState<File | null>(null);
+  const [fotoPreview, setFotoPreview] = useState<string>("");
+  const [removeFoto, setRemoveFoto] = useState(false);
+  const [existingFoto, setExistingFoto] = useState<string | null>(null);
+  const fotoInputRef = useRef<HTMLInputElement>(null);
   const toast = useToast();
 
   const fetchReviews = async () => {
@@ -52,6 +57,10 @@ export default function ReviewManagement() {
 
   const resetForm = () => {
     setFormData({ nama_customer: "", rating: 5, isi_review: "", produk_disewa: "", kegiatan: "", is_approved: false });
+    setFotoFile(null);
+    setFotoPreview("");
+    setRemoveFoto(false);
+    setExistingFoto(null);
     setEditingId(null);
     setShowForm(false);
   };
@@ -65,6 +74,10 @@ export default function ReviewManagement() {
       kegiatan: r.kegiatan ?? "",
       is_approved: r.is_approved,
     });
+    setExistingFoto(r.foto_customer);
+    setFotoFile(null);
+    setFotoPreview("");
+    setRemoveFoto(false);
     setEditingId(r.id_testimoni);
     setShowForm(true);
   };
@@ -74,7 +87,11 @@ export default function ReviewManagement() {
     setSaving(true);
     try {
       if (editingId) {
-        await testimoniApi.update(editingId, formData);
+        await testimoniApi.updateWithFoto(editingId, {
+          ...formData,
+          foto: fotoFile,
+          remove_foto: removeFoto,
+        });
         toast.success("Review berhasil diperbarui!");
       } else {
         await testimoniApi.create(formData);
@@ -252,6 +269,63 @@ export default function ReviewManagement() {
                 placeholder="Isi ulasan pelanggan..."
               />
             </div>
+
+            {/* Foto Customer — shown when editing existing review */}
+            {editingId && (
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-2">FOTO CUSTOMER</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center shrink-0">
+                    {fotoPreview ? (
+                      <img src={fotoPreview} alt="preview" className="w-full h-full object-cover" />
+                    ) : existingFoto && !removeFoto ? (
+                      <img
+                        src={existingFoto.startsWith('/') ? `http://localhost:8000${existingFoto}` : existingFoto}
+                        alt="existing"
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <ImagePlus size={22} className="text-gray-300" />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <input
+                      ref={fotoInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) {
+                          setFotoFile(f);
+                          setRemoveFoto(false);
+                          const reader = new FileReader();
+                          reader.onloadend = () => setFotoPreview(reader.result as string);
+                          reader.readAsDataURL(f);
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fotoInputRef.current?.click()}
+                      className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 flex items-center gap-1.5"
+                    >
+                      <ImagePlus size={13} /> Pilih Foto
+                    </button>
+                    {(existingFoto || fotoFile) && !removeFoto && (
+                      <button
+                        type="button"
+                        onClick={() => { setFotoFile(null); setFotoPreview(""); setRemoveFoto(true); }}
+                        className="text-xs px-3 py-1.5 border border-red-200 rounded-lg hover:bg-red-50 text-red-500 flex items-center gap-1.5"
+                      >
+                        <Trash size={13} /> Hapus Foto
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Approve toggle in form */}
             <div className="flex items-center gap-3">
