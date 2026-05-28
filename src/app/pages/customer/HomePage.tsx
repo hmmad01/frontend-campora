@@ -15,10 +15,7 @@ import imgTenda from '@/images/logo tenda.png';
 import imgCarrier from '@/images/logo carrier.png';
 import imgSleeping from '@/images/sleeping bag.png';
 import imgPerlengkapan from '@/images/logo perlengkapan.png';
-import imgReview1 from '@/images/hammad.png';
-import imgReview2 from '@/images/raihan.png';
-import imgReview3 from '@/images/bintang.png';
-import imgReview4 from '@/images/nathan.png';
+
 import imgHikingIcon from '@/images/orang berjalan.png';
 import imgGunung from '@/images/hero.png';
 
@@ -169,12 +166,7 @@ export function CaraSewa() {
 
 const poppins = { fontFamily: "'Poppins', sans-serif" } as const;
 
-const testimonials = [
-  { quote: "Peralatannya lengkap dan kondisinya bagus. Proses sewa juga gampang, tinggal cek di website terus langsung hubungi lewat WhatsApp. Pelayanannya cepat dan responsif.", name: "Bintang Fatahillah", product: "Tenda Family 6 Orang", activity: "Pendakian Gunung Bokong", avatar: imgReview3 },
-  { quote: "Enak sih nyewanya, tinggal chat langsung beres. Nentuin tanggal juga gampang, jadi nggak ribet. Kemarin sewa tenda sama sleeping bag, semuanya oke dipake", name: "Nathanael Eleazar", product: "Cooking Seat", activity: "Camping di Gunung Buthak", avatar: imgReview4 },
-  { quote: "Nyewa di sini enak, nggak pake ribet. Tinggal tanya-tanya dikit langsung dibantuin. Barangnya juga bersih, keliatan dirawat.", name: "Abdulloh Hammad", product: "Sleeping Bag Standar", activity: "Camping Melihat Aurora", avatar: imgReview1 },
-  { quote: "Enak banget buat yang nggak mau ribet prepare alat sendiri. Tinggal sewa, semua udah siap. Kemarin gue pake buat seharian dan semuanya aman. Balikin juga gampang, nggak dipersulit.", name: "Raihan Ferriand", product: "Adventurer", activity: "Hiking di Kawah Idjen", avatar: imgReview2 },
-];
+
 
 function nameToColor(name: string): string {
   const colors = [
@@ -266,11 +258,9 @@ export function TestimoniSection() {
             activity: item.kegiatan || '',
             avatarUrl: item.foto_customer,
           })));
-        } else {
-          setList(testimonials.map(t => ({ quote: t.quote, name: t.name, product: t.product, activity: t.activity, avatarUrl: t.avatar })));
         }
       } catch (err) {
-        setList(testimonials.map(t => ({ quote: t.quote, name: t.name, product: t.product, activity: t.activity, avatarUrl: t.avatar })));
+        console.error('Failed to fetch testimonials', err);
       }
     };
     fetchTestimonials();
