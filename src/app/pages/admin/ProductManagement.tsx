@@ -93,7 +93,8 @@ export default function ProductManagement() {
         barangApi.getAll({ per_page: 100 }),
         kategoriApi.getAll(),
       ]);
-      setProducts(barangRes.data);
+      const sortedBarang = barangRes.data.sort((a: Barang, b: Barang) => b.id_barang - a.id_barang);
+      setProducts(sortedBarang);
       setKategoris(kategoriRes);
     } catch (err: any) {
       setError(err.message || "Gagal memuat data");
