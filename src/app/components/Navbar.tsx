@@ -10,6 +10,7 @@ import imgLogo from '@/images/logo campora.png';
 import type { NavLink } from '../types';
 
 const NAV_LINKS: NavLink[] = [
+  { href: '/', label: 'BERANDA' },
   { href: '/katalog', label: 'KATALOG' },
   { href: '/paket', label: 'PAKET' },
   { href: '/review', label: 'REVIEW' },
