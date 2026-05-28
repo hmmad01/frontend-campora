@@ -224,15 +224,29 @@ export interface TestimoniItem {
   foto_customer: string | null;
   rating: number;
   isi_review: string;
+  produk_disewa: string | null;
+  kegiatan: string | null;
+  is_approved: boolean;
   created_at: string;
 }
 
 export const testimoniApi = {
+  /** Public: only approved reviews */
   getAll: () => request<PaginatedResponse<TestimoniItem>>('/testimonis'),
-  create: (data: { nama_customer: string; rating: number; isi_review: string }) =>
+  /** Admin: all reviews regardless of approval */
+  adminGetAll: () => request<PaginatedResponse<TestimoniItem>>('/admin/testimonis'),
+  /** Admin: create a review directly */
+  create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean }) =>
     request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: JSON.stringify(data) }),
+  /** Customer: submit review (pending approval) */
+  submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string }) =>
+    request<{ message: string; data: TestimoniItem }>('/testimonis', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<TestimoniItem>) =>
     request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  approve: (id: number) =>
+    request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/approve`, { method: 'PATCH' }),
+  unapprove: (id: number) =>
+    request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/unapprove`, { method: 'PATCH' }),
   delete: (id: number) =>
     request<{ message: string }>(`/admin/testimonis/${id}`, { method: 'DELETE' }),
 };
@@ -281,7 +295,9 @@ export function toProduct(b: Barang): Product {
       ? (b.fotos[0].url_foto.startsWith('/') ? `http://localhost:8000${b.fotos[0].url_foto}` : b.fotos[0].url_foto)
       : '',
     available: b.is_aktif && b.stok_total > 0,
-    description: b.spesifikasi ?? undefined,
+    description: b.spesifikasi
+      ? b.spesifikasi.split(/\n+Fitur:/i)[0].trim()
+      : undefined,
     features: b.spesifikasi
       ? b.spesifikasi
           .split('\n')

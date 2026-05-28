@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { ChevronRight, Shield, Star, Clock, Package, Award, ShoppingBag, Search, CalendarDays, MessageCircle, MapPin, ThumbsUp, Quote, Tent, Backpack, Flame, Compass, Loader2 } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
-import { barangApi, toProduct } from '../../api';
+import { barangApi, toProduct, testimoniApi, type TestimoniItem } from '../../api';
 import type { Product } from '../../types';
 
 import imgTenda from '@/images/logo tenda.png';
@@ -176,15 +176,31 @@ const testimonials = [
   { quote: "Enak banget buat yang nggak mau ribet prepare alat sendiri. Tinggal sewa, semua udah siap. Kemarin gue pake buat seharian dan semuanya aman. Balikin juga gampang, nggak dipersulit.", name: "Raihan Ferriand", product: "Adventurer", activity: "Hiking di Kawah Idjen", avatar: imgReview2 },
 ];
 
+function nameToColor(name: string): string {
+  const colors = [
+    '#124756', '#2F855A', '#B7791F', '#6B46C1', '#C05621',
+    '#2C7A7B', '#97266D', '#285E61',
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
 interface Testimonial {
   quote: string;
   name: string;
   product: string;
   activity: string;
-  avatar: string;
+  avatarUrl?: string | null;
 }
 
-function TestimoniCard({ quote, name, product, activity, avatar }: Testimonial) {
+function TestimoniCard({ quote, name, product, activity, avatarUrl }: Testimonial) {
+  const initials = name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+
   return (
     <div className="relative w-[320px] shrink-0">
       <div className="relative bg-white rounded-[16px] border border-black/20 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.15)] p-4 h-[220px] flex flex-col">
@@ -198,13 +214,29 @@ function TestimoniCard({ quote, name, product, activity, avatar }: Testimonial) 
           ))}
         </div>
         <div className="mt-auto flex items-center gap-[8px]">
-          <div className="w-8 h-8 rounded-[8px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.15)] overflow-hidden shrink-0">
-            <img src={avatar} alt={name} className="w-full h-full object-cover" />
+          <div className="w-8 h-8 rounded-[8px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.15)] overflow-hidden shrink-0 flex items-center justify-center bg-gray-100">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl.startsWith('/') ? `http://localhost:8000${avatarUrl}` : avatarUrl}
+                alt={name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center font-semibold text-white text-[10px] select-none"
+                style={{ background: nameToColor(name), width: 32, height: 32 }}
+              >
+                {initials}
+              </div>
+            )}
           </div>
           <div className="flex flex-col gap-[2px] font-medium" style={poppins}>
             <p className="text-[9px] text-black leading-tight">{name}</p>
-            <p className="text-[8px] text-black/50 leading-tight">{product}</p>
-            <p className="text-[8px] text-[#055f08] leading-tight">{activity}</p>
+            {product && <p className="text-[8px] text-black/50 leading-tight">{product}</p>}
+            {activity && <p className="text-[8px] text-[#055f08] leading-tight">{activity}</p>}
           </div>
         </div>
       </div>
@@ -220,19 +252,43 @@ function TestimoniCard({ quote, name, product, activity, avatar }: Testimonial) 
 }
 
 export function TestimoniSection() {
+  const [list, setList] = useState<Testimonial[]>([]);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await testimoniApi.getAll();
+        if (res.data && res.data.length > 0) {
+          setList(res.data.map(item => ({
+            quote: item.isi_review,
+            name: item.nama_customer,
+            product: item.produk_disewa || '',
+            activity: item.kegiatan || '',
+            avatarUrl: item.foto_customer,
+          })));
+        } else {
+          setList(testimonials.map(t => ({ quote: t.quote, name: t.name, product: t.product, activity: t.activity, avatarUrl: t.avatar })));
+        }
+      } catch (err) {
+        setList(testimonials.map(t => ({ quote: t.quote, name: t.name, product: t.product, activity: t.activity, avatarUrl: t.avatar })));
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
   return (
     <section className="w-full bg-[#EDFDF6] py-14" style={poppins}>
       <div className="max-w-[1440px] mx-auto px-6 flex flex-col items-center">
-        <div className="bg-white rounded-[30px] h-[37px] w-[142px] flex items-center justify-center">
+        <div className="bg-white rounded-[30px] h-[37px] w-[142px] flex items-center justify-center shadow-sm">
           <p className="text-[#124756] text-[12px] font-medium">Testimoni Pelanggan</p>
         </div>
         <div className="mt-3 flex flex-col items-center gap-[5px] w-[689px] max-w-full text-center">
           <h2 className="text-black text-[30px] font-semibold">APA KATA MEREKA?</h2>
           <p className="text-black/50 text-[14px]">Ribuan petualang telah mempercayai CAMPORA untuk menemani perjalanan mereka</p>
         </div>
-        <div className="mt-8 w-full overflow-x-auto">
+        <div className="mt-8 w-full overflow-x-auto scrollbar-hide">
           <div className="flex gap-[16px] items-start justify-start lg:justify-center px-2 pb-10 min-w-max mx-auto">
-            {testimonials.map((t) => <TestimoniCard key={t.name} {...t} />)}
+            {list.map((t, idx) => <TestimoniCard key={idx} {...t} />)}
           </div>
         </div>
       </div>
