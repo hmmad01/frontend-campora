@@ -26,23 +26,6 @@ export default function Login() {
       return;
     }
 
-    if (password.length < 8) {
-      setError("Password minimal harus 8 karakter");
-      return;
-    }
-    if (password.length > 20) {
-      setError("Password maksimal harus 20 karakter");
-      return;
-    }
-    const hasLowercase = /[a-z]/.test(password);
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSymbol = /[^a-zA-Z0-9\s]/.test(password);
-    if (!hasLowercase || !hasUppercase || !hasNumber || !hasSymbol) {
-      setError("Password harus mengandung minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 simbol");
-      return;
-    }
-
     setLoading(true);
     try {
       const res = await authApi.login(username, password);
@@ -76,7 +59,7 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
                 {error}
               </div>
             )}
@@ -118,9 +101,6 @@ export default function Login() {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">
-                Ketentuan: 8-20 karakter, minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 simbol.
-              </p>
             </div>
 
             <button
