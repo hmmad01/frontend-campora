@@ -31,7 +31,7 @@ export default function Login() {
       const res = await authApi.login(username, password);
       // Simpan data admin ke sessionStorage
       sessionStorage.setItem("admin", JSON.stringify(res.data));
-      navigate("/dashboard/kelola-barang");
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err.message || "Username atau password salah");
     } finally {

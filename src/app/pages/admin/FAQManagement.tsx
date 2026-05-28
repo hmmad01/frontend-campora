@@ -22,7 +22,8 @@ export default function FAQManagement() {
   const fetchFaqs = async () => {
     try {
       const data = await faqApi.getAll();
-      setFaqs(data);
+      const sortedData = data.sort((a: FaqItem, b: FaqItem) => b.id_faq - a.id_faq);
+      setFaqs(sortedData);
     } catch (err: any) {
       setError(err.message || "Gagal memuat data FAQ");
     } finally {

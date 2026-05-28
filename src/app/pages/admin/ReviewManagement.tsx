@@ -39,7 +39,8 @@ export default function ReviewManagement() {
   const fetchReviews = async () => {
     try {
       const res = await testimoniApi.adminGetAll();
-      setReviews(res.data);
+      const sortedData = res.data.sort((a: TestimoniItem, b: TestimoniItem) => b.id_testimoni - a.id_testimoni);
+      setReviews(sortedData);
     } catch (err: any) {
       setError(err.message || "Gagal memuat data review");
     } finally {
