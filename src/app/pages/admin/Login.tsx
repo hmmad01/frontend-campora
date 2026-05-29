@@ -61,7 +61,7 @@ export default function Login() {
 
           <form onSubmit={handleLogin} className="space-y-5">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                 {error}
               </div>
             )}
@@ -103,6 +103,9 @@ export default function Login() {
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              <p className="mt-1.5 text-xs text-gray-500">
+                Ketentuan: 8-20 karakter, minimal 1 huruf kapital, 1 huruf kecil, 1 angka, dan 1 simbol.
+              </p>
             </div>
 
             <button
