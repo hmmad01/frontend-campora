@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
 import { ChevronRight, Shield, Star, Clock, Package, Award, ShoppingBag, Search, CalendarDays, MessageCircle, MapPin, ThumbsUp, Quote, Tent, Backpack, Flame, Compass, Loader2 } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
-import { barangApi, toProduct, testimoniApi, type TestimoniItem } from '../../api';
+import { barangApi, toProduct, testimoniApi, ketersediaanApi, type TestimoniItem } from '../../api';
 import type { Product } from '../../types';
 
 import imgTenda from '@/images/logo tenda.png';
@@ -385,8 +385,27 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        const res = await barangApi.getAll({ per_page: 5 });
-        setPopularProducts(res.data.map(toProduct));
+        const [res, todayAvailRes] = await Promise.all([
+          barangApi.getAll({ per_page: 20 }),
+          ketersediaanApi.checkToday(),
+        ]);
+
+        // Build availability map
+        const availMap: Record<number, boolean> = {};
+        for (const a of todayAvailRes) {
+          availMap[a.id_barang] = a.tersedia;
+        }
+
+        // Filter out items with no stock today, then take first 5
+        const available = res.data
+          .filter((b) => {
+            if (b.id_barang in availMap) return availMap[b.id_barang];
+            return b.is_aktif && b.stok_total > 0;
+          })
+          .slice(0, 5)
+          .map(toProduct);
+
+        setPopularProducts(available);
       } catch (err) {
         console.error('Failed to fetch popular products:', err);
       } finally {
@@ -395,6 +414,7 @@ export default function HomePage() {
     };
     fetchPopular();
   }, []);
+
 
   return (
     <div className="w-full">

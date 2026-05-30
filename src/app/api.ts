@@ -333,7 +333,15 @@ export function toProduct(b: Barang): Product {
 
 // ── Ketersediaan ─────────────────────────────────────────────────────
 
+export interface TodayAvailability {
+  id_barang: number;
+  stok_tersedia: number;
+  tersedia: boolean;
+}
+
 export const ketersediaanApi = {
+  /** Public: check stok tersedia semua barang untuk hari ini */
+  checkToday: () => request<TodayAvailability[]>('/ketersediaan/today'),
   getAll: (idBarang?: number) => {
     const qs = idBarang ? `?id_barang=${idBarang}` : '';
     return request<PaginatedResponse<Ketersediaan>>(`/admin/ketersediaan${qs}`);
@@ -362,3 +370,4 @@ export const ketersediaanApi = {
   delete: (id: number) =>
     request<{ message: string }>(`/admin/ketersediaan/${id}`, { method: 'DELETE' }),
 };
+

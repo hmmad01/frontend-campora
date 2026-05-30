@@ -128,7 +128,7 @@ function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
   const [produk, setProduk] = useState('');
   const [kegiatan, setKegiatan] = useState('');
   const [quote, setQuote] = useState('');
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [avatarFile, setAvatarFile] = useState<File | null>(null);

@@ -25,7 +25,7 @@ export default function ReviewManagement() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     nama_customer: "",
-    rating: 5,
+    rating: 0,
     isi_review: "",
     produk_disewa: "",
     kegiatan: "",
@@ -56,7 +56,7 @@ export default function ReviewManagement() {
   useEffect(() => { fetchReviews(); }, []);
 
   const resetForm = () => {
-    setFormData({ nama_customer: "", rating: 5, isi_review: "", produk_disewa: "", kegiatan: "", is_approved: false });
+    setFormData({ nama_customer: "", rating: 0, isi_review: "", produk_disewa: "", kegiatan: "", is_approved: false });
     setFotoFile(null);
     setFotoPreview("");
     setRemoveFoto(false);
