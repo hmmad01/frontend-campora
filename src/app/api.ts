@@ -354,6 +354,15 @@ export const ketersediaanApi = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  sync: (data: {
+    id_barang: number;
+    id_admin: number;
+    changes: { date: string; status: 'merah' | 'hijau' }[];
+  }) =>
+    request<{ message: string }>('/admin/ketersediaan/sync', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
   update: (id: number, data: Partial<Ketersediaan>) =>
     request<{ message: string; data: Ketersediaan }>(`/admin/ketersediaan/${id}`, {
       method: 'PUT',
