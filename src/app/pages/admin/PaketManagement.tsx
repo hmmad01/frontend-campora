@@ -22,7 +22,8 @@ export default function PaketManagement() {
   const fetchPakets = async () => {
     try {
       const data = await paketApi.getAll();
-      setPakets(data);
+      const sortedData = data.sort((a: PaketItem, b: PaketItem) => b.id_paket - a.id_paket);
+      setPakets(sortedData);
     } catch (err: any) {
       setError(err.message || "Gagal memuat data paket");
     } finally {

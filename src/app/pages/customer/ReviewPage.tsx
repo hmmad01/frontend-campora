@@ -1,75 +1,70 @@
 /**
  * @file ReviewPage.tsx
  * @description Halaman ulasan (reviews) dan testimoni dari pelanggan setia CAMPORA.
- *              Menampilkan statistik rating, kartu review (style sama seperti di beranda),
- *              serta form untuk customer menambah review baru.
+ *              Data di-load dari backend Laravel (hanya review yang sudah di-approve admin).
+ *              Customer bisa menambah review baru — review akan masuk dalam status "pending"
+ *              hingga disetujui admin melalui panel admin.
  */
 
-import { useState, useRef } from 'react';
-import { Star, Quote, X, Plus, Send, ImagePlus } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Star, Quote, X, Plus, Send, ImagePlus, Loader2, CheckCircle, ChevronDown } from 'lucide-react';
+import { testimoniApi, barangApi, type TestimoniItem } from '../../api';
 
 import imgHero from '@/images/header REVIEW.png';
-import imgAvatar1 from '@/images/hammad.png';
-import imgAvatar2 from '@/images/raihan.png';
-import imgAvatar3 from '@/images/bintang.png';
-import imgAvatar4 from '@/images/nathan.png';
 
-// ── Data ─────────────────────────────────────────────────────────────────────
-
-interface Testimonial {
-  id: number;
-  quote: string;
-  name: string;
-  product: string;
-  activity: string;
-  avatar: string;
-  rating: number;
-}
-
-const INITIAL_REVIEWS: Testimonial[] = [
-  {
-    id: 1,
-    quote: 'Nyewa di sini enak, nggak pake ribet. Tinggal tanya-tanya dikit langsung dibantuin. Barangnya juga bersih, keliatan dirawat.',
-    name: 'Abdulloh Hammad',
-    product: 'Sleeping Bag Standar',
-    activity: 'Camping Melihat Aurora',
-    avatar: imgAvatar1,
-    rating: 5,
-  },
-  {
-    id: 2,
-    quote: 'Peralatannya lengkap dan kondisinya bagus. Proses sewa juga gampang, tinggal cek di website terus langsung hubungi lewat WhatsApp. Pelayanannya cepat dan responsif.',
-    name: 'Bintang Fatahillah',
-    product: 'Tenda Family 6 Orang',
-    activity: 'Pendakian Gunung Bokong',
-    avatar: imgAvatar3,
-    rating: 5,
-  },
-  {
-    id: 3,
-    quote: 'Enak sih nyewanya, tinggal chat langsung beres. Nentuin tanggal juga gampang, jadi nggak ribet. Kemarin sewa tenda sama sleeping bag, semuanya oke dipake.',
-    name: 'Nathanael Eleazar',
-    product: 'Cooking Set',
-    activity: 'Camping di Gunung Buthak',
-    avatar: imgAvatar4,
-    rating: 5,
-  },
-  {
-    id: 4,
-    quote: 'Enak banget buat yang nggak mau ribet prepare alat sendiri. Tinggal sewa, semua udah siap. Kemarin gue pake buat seharian dan semuanya aman. Balikin juga gampang, nggak dipersulit.',
-    name: 'Raihan Ferriand',
-    product: 'Adventurer',
-    activity: 'Hiking di Kawah Idjen',
-    avatar: imgAvatar2,
-    rating: 5,
-  },
-];
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const poppins = { fontFamily: "'Poppins', sans-serif" } as const;
 
-// ── TestimoniCard (sama persis seperti di beranda) ───────────────────────────
+/** Generates a consistent color from a name string (for avatar initials). */
+function nameToColor(name: string): string {
+  const colors = [
+    '#124756', '#2F855A', '#B7791F', '#6B46C1', '#C05621',
+    '#2C7A7B', '#97266D', '#285E61',
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
 
-function TestimoniCard({ quote, name, product, activity, avatar, rating }: Omit<Testimonial, 'id'>) {
+/** Renders avatar: uploaded image or colored initials block. */
+function Avatar({ src, name, size = 36 }: { src?: string | null; name: string; size?: number }) {
+  const initials = name
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? '')
+    .join('');
+
+  if (src) {
+    return (
+      <img
+        src={src.startsWith('/') ? `http://localhost:8000${src}` : src}
+        alt={name}
+        className="w-full h-full object-cover"
+        style={{ width: size, height: size }}
+        onError={(e) => {
+          // Fallback to initials on broken image
+          (e.target as HTMLImageElement).style.display = 'none';
+        }}
+      />
+    );
+  }
+
+  return (
+    <div
+      className="flex items-center justify-center font-semibold text-white text-[11px] rounded-[8px]"
+      style={{ width: size, height: size, background: nameToColor(name) }}
+    >
+      {initials}
+    </div>
+  );
+}
+
+// ── TestimoniCard ─────────────────────────────────────────────────────────────
+
+function TestimoniCard({ item }: { item: TestimoniItem }) {
+  const { nama_customer, isi_review, rating, foto_customer } = item;
+
   return (
     <div className="relative">
       <div className="relative bg-white rounded-[16px] border border-black/20 shadow-[0px_4px_4px_0px_rgba(0,0,0,0.15)] p-5 min-h-[220px] flex flex-col">
@@ -83,7 +78,7 @@ function TestimoniCard({ quote, name, product, activity, avatar, rating }: Omit<
           className="mt-3 px-0.5 italic text-black w-full text-[12px] font-medium [word-break:break-word] leading-normal"
           style={poppins}
         >
-          &ldquo;{quote}&rdquo;
+          &ldquo;{isi_review}&rdquo;
         </p>
 
         {/* Stars */}
@@ -96,12 +91,16 @@ function TestimoniCard({ quote, name, product, activity, avatar, rating }: Omit<
         {/* Author */}
         <div className="mt-auto pt-3 flex items-center gap-[8px]">
           <div className="w-9 h-9 rounded-[8px] shadow-[0px_2px_4px_0px_rgba(0,0,0,0.15)] overflow-hidden shrink-0">
-            <img src={avatar} alt={name} className="w-full h-full object-cover" />
+            <Avatar src={foto_customer} name={nama_customer} size={36} />
           </div>
           <div className="flex flex-col gap-[2px] font-medium" style={poppins}>
-            <p className="text-[11px] text-black leading-tight">{name}</p>
-            <p className="text-[10px] text-black/50 leading-tight">{product}</p>
-            <p className="text-[10px] text-[#055f08] leading-tight">{activity}</p>
+            <p className="text-[11px] text-black leading-tight">{nama_customer}</p>
+            {item.produk_disewa && (
+              <p className="text-[10px] text-black/50 leading-tight">{item.produk_disewa}</p>
+            )}
+            {item.kegiatan && (
+              <p className="text-[10px] text-[#055f08] leading-tight">{item.kegiatan}</p>
+            )}
           </div>
         </div>
       </div>
@@ -117,48 +116,88 @@ function TestimoniCard({ quote, name, product, activity, avatar, rating }: Omit<
   );
 }
 
-// ── Review Form Modal ────────────────────────────────────────────────────────
+// ── Review Form Modal ─────────────────────────────────────────────────────────
 
 interface ReviewFormProps {
   onClose: () => void;
-  onSubmit: (review: Testimonial) => void;
-  nextId: number;
+  onSuccess: () => void;
 }
 
-function ReviewFormModal({ onClose, onSubmit, nextId }: ReviewFormProps) {
+function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
   const [name, setName] = useState('');
-  const [product, setProduct] = useState('');
-  const [activity, setActivity] = useState('');
+  const [produk, setProduk] = useState('');
+  const [kegiatan, setKegiatan] = useState('');
   const [quote, setQuote] = useState('');
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [productList, setProductList] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    barangApi.getAll({ per_page: 100 }).then((res) => {
+      setProductList(res.data.map((b) => b.nama_barang));
+    }).catch(() => {});
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setAvatarPreview(reader.result as string);
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !quote.trim()) return;
-
-    onSubmit({
-      id: nextId,
-      quote: quote.trim(),
-      name: name.trim(),
-      product: product.trim() || '-',
-      activity: activity.trim() || '-',
-      avatar: avatarPreview,
-      rating,
-    });
-    onClose();
+    setSubmitting(true);
+    try {
+      await testimoniApi.submitByCustomer({
+        nama_customer: name.trim(),
+        rating,
+        isi_review: quote.trim(),
+        produk_disewa: produk || undefined,
+        kegiatan: kegiatan.trim() || undefined,
+        foto: avatarFile ?? null,
+      });
+      setSubmitted(true);
+      setTimeout(() => {
+        onClose();
+        onSuccess();
+      }, 2500);
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengirim review. Silakan coba lagi.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  if (submitted) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+        <div
+          className="relative bg-white rounded-[20px] w-full max-w-[400px] p-8 shadow-2xl text-center"
+          style={poppins}
+        >
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle size={32} className="text-green-600" />
+          </div>
+          <h3 className="text-[20px] font-semibold text-gray-900 mb-2">Review Terkirim!</h3>
+          <p className="text-[13px] text-gray-500 leading-relaxed">
+            Terima kasih telah berbagi pengalamanmu bersama CAMPORA!
+            Review kamu sedang menunggu persetujuan admin dan akan segera muncul di halaman ini.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -209,9 +248,8 @@ function ReviewFormModal({ onClose, onSubmit, nextId }: ReviewFormProps) {
 
           {/* Avatar upload + Name in a row */}
           <div className="flex items-end gap-4">
-            {/* Image upload */}
             <div className="shrink-0">
-              <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Foto</label>
+              <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Foto (opsional)</label>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -246,24 +284,30 @@ function ReviewFormModal({ onClose, onSubmit, nextId }: ReviewFormProps) {
             </div>
           </div>
 
-          {/* Product & Activity in a row */}
+          {/* Produk & Kegiatan */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Produk yang disewa</label>
-              <input
-                type="text"
-                value={product}
-                onChange={(e) => setProduct(e.target.value)}
-                placeholder="e.g. Tenda 4 Orang"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-[13px] focus:outline-none focus:border-[#124756] focus:ring-1 focus:ring-[#124756]/20 transition-colors"
-              />
+              <div className="relative">
+                <select
+                  value={produk}
+                  onChange={(e) => setProduk(e.target.value)}
+                  className="w-full appearance-none px-4 py-2.5 pr-9 rounded-xl border border-gray-300 text-[13px] focus:outline-none focus:border-[#124756] focus:ring-1 focus:ring-[#124756]/20 transition-colors bg-white cursor-pointer"
+                >
+                  <option value="">-- Pilih produk --</option>
+                  {productList.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              </div>
             </div>
             <div>
               <label className="text-[12px] font-medium text-gray-700 mb-1.5 block">Kegiatan / Trip</label>
               <input
                 type="text"
-                value={activity}
-                onChange={(e) => setActivity(e.target.value)}
+                value={kegiatan}
+                onChange={(e) => setKegiatan(e.target.value)}
                 placeholder="e.g. Camping di Bromo"
                 className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-[13px] focus:outline-none focus:border-[#124756] focus:ring-1 focus:ring-[#124756]/20 transition-colors"
               />
@@ -283,13 +327,19 @@ function ReviewFormModal({ onClose, onSubmit, nextId }: ReviewFormProps) {
             />
           </div>
 
+          {/* Info note */}
+          <p className="text-[11px] text-gray-400 -mt-1">
+            ℹ️ Review kamu akan muncul setelah disetujui oleh admin kami.
+          </p>
+
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-[#124756] text-white py-3 rounded-xl text-[14px] font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2"
+            disabled={submitting}
+            className="w-full bg-[#124756] text-white py-3 rounded-xl text-[14px] font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            <Send size={15} />
-            Kirim Review
+            {submitting ? <Loader2 size={15} className="animate-spin" /> : <Send size={15} />}
+            {submitting ? 'Mengirim...' : 'Kirim Review'}
           </button>
         </form>
       </div>
@@ -297,17 +347,30 @@ function ReviewFormModal({ onClose, onSubmit, nextId }: ReviewFormProps) {
   );
 }
 
-// ── Halaman Utama ────────────────────────────────────────────────────────────
+// ── Halaman Utama ─────────────────────────────────────────────────────────────
 
 export default function ReviewPage() {
-  const [reviews, setReviews] = useState<Testimonial[]>(INITIAL_REVIEWS);
+  const [reviews, setReviews] = useState<TestimoniItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const handleAddReview = (review: Testimonial) => {
-    setReviews((prev) => [review, ...prev]);
+  const fetchReviews = async () => {
+    try {
+      const res = await testimoniApi.getAll();
+      setReviews(res.data);
+    } catch {
+      // Silently ignore — page still shows UI
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const averageRating = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
+  useEffect(() => { fetchReviews(); }, []);
+
+  const averageRating =
+    reviews.length > 0
+      ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+      : '5.0';
 
   return (
     <div className="w-full" style={poppins}>
@@ -319,7 +382,7 @@ export default function ReviewPage() {
           {/* Left column: headline + button */}
           <div className="lg:col-span-1 flex flex-col gap-5">
             <h1 className="font-work text-3xl md:text-4xl font-semibold text-gray-900 leading-tight">
-              MENJADI KEPERCAYAAN & FAVORIT ORANG{' '}
+              MENJADI KEPERCAYAAN &amp; FAVORIT ORANG{' '}
               <span className="text-[#124756]">100K+</span>
             </h1>
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -337,7 +400,7 @@ export default function ReviewPage() {
               </div>
             </div>
 
-            {/* ── Tulis Review Button ── */}
+            {/* Tulis Review Button */}
             <button
               onClick={() => setShowForm(true)}
               className="mt-2 self-start flex items-center gap-2 bg-[#124756] text-white px-6 py-3 rounded-full text-[14px] font-medium hover:bg-[#0e3a47] active:scale-95 transition-all shadow-lg shadow-[#124756]/25"
@@ -356,9 +419,19 @@ export default function ReviewPage() {
 
           {/* Right column: scrollable review cards */}
           <div className="lg:col-span-1 flex flex-col gap-6 max-h-[460px] overflow-y-auto pr-2 scrollbar-hide">
-            {reviews.map((review) => (
-              <TestimoniCard key={review.id} {...review} />
-            ))}
+            {loading ? (
+              <div className="flex items-center justify-center h-40">
+                <Loader2 size={32} className="animate-spin text-[#124756]/50" />
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-10 text-gray-400 text-sm">
+                Belum ada review. Jadilah yang pertama!
+              </div>
+            ) : (
+              reviews.map((r) => (
+                <TestimoniCard key={r.id_testimoni} item={r} />
+              ))
+            )}
           </div>
         </div>
 
@@ -368,8 +441,7 @@ export default function ReviewPage() {
       {showForm && (
         <ReviewFormModal
           onClose={() => setShowForm(false)}
-          onSubmit={handleAddReview}
-          nextId={reviews.length + 1}
+          onSuccess={fetchReviews}
         />
       )}
     </div>

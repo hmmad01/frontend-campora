@@ -5,9 +5,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Search, Filter, ChevronDown, Loader2 } from 'lucide-react';
+import { Search, Filter, ChevronDown, Loader2, PackageX } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
-import { barangApi, kategoriApi, toProduct, type Kategori } from '../../api';
+import { barangApi, kategoriApi, testimoniApi, ketersediaanApi, toProduct, type Kategori } from '../../api';
 import type { Product } from '../../types';
 
 const SORT_OPTIONS = ['Terpopuler', 'Harga Terendah', 'Harga Tertinggi', 'Rating Tertinggi'];
@@ -23,11 +23,47 @@ export default function KatalogPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [barangRes, kategoriRes] = await Promise.all([
+        const [barangRes, kategoriRes, testimoniRes, todayAvailRes] = await Promise.all([
           barangApi.getAll({ per_page: 100 }),
           kategoriApi.getAll(),
+          testimoniApi.getAll(),
+          ketersediaanApi.checkToday(),
         ]);
-        setProducts(barangRes.data.map(toProduct));
+
+        // Build availability map: id_barang -> tersedia (bool)
+        const availMap: Record<number, boolean> = {};
+        for (const a of todayAvailRes) {
+          availMap[a.id_barang] = a.tersedia;
+        }
+
+        // Build a map: produk_disewa -> { totalRating, count }
+        const ratingMap: Record<string, { total: number; count: number }> = {};
+        for (const t of testimoniRes.data) {
+          if (!t.produk_disewa) continue;
+          const key = t.produk_disewa.trim().toLowerCase();
+          if (!ratingMap[key]) ratingMap[key] = { total: 0, count: 0 };
+          ratingMap[key].total += t.rating;
+          ratingMap[key].count += 1;
+        }
+
+        // Convert barangs to Products — hide items with 0 stock today
+        const converted = barangRes.data
+          .filter((b) => {
+            // If availability data exists for this item, use it; else assume tersedia
+            if (b.id_barang in availMap) return availMap[b.id_barang];
+            return b.is_aktif && b.stok_total > 0;
+          })
+          .map((b) => {
+            const product = toProduct(b);
+            const key = b.nama_barang.trim().toLowerCase();
+            if (ratingMap[key] && ratingMap[key].count > 0) {
+              product.rating = Math.round((ratingMap[key].total / ratingMap[key].count) * 10) / 10;
+              product.reviews = ratingMap[key].count;
+            }
+            return product;
+          });
+
+        setProducts(converted);
         setKategoris(kategoriRes);
       } catch (err) {
         console.error('Failed to fetch catalog data:', err);
@@ -37,6 +73,7 @@ export default function KatalogPage() {
     };
     fetchData();
   }, []);
+
 
   const filterCategories = ['Semua Kategori', ...kategoris.map((k) => k.nama_kategori)];
 

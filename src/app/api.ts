@@ -110,6 +110,8 @@ export interface Barang {
   harga_per_hari: string;
   stok_total: number;
   is_aktif: boolean;
+  rating: number;
+  jumlah_review: number;
   created_at: string;
   updated_at: string;
   kategori?: Kategori;
@@ -224,15 +226,50 @@ export interface TestimoniItem {
   foto_customer: string | null;
   rating: number;
   isi_review: string;
+  produk_disewa: string | null;
+  kegiatan: string | null;
+  is_approved: boolean;
   created_at: string;
 }
 
 export const testimoniApi = {
+  /** Public: only approved reviews */
   getAll: () => request<PaginatedResponse<TestimoniItem>>('/testimonis'),
-  create: (data: { nama_customer: string; rating: number; isi_review: string }) =>
+  /** Admin: all reviews regardless of approval */
+  adminGetAll: () => request<PaginatedResponse<TestimoniItem>>('/admin/testimonis'),
+  /** Admin: create a review directly */
+  create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean }) =>
     request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: JSON.stringify(data) }),
+  /** Customer: submit review with optional photo (FormData) */
+  submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; foto?: File | null }) => {
+    const fd = new FormData();
+    fd.append('nama_customer', data.nama_customer);
+    fd.append('rating', String(data.rating));
+    fd.append('isi_review', data.isi_review);
+    if (data.produk_disewa) fd.append('produk_disewa', data.produk_disewa);
+    if (data.kegiatan) fd.append('kegiatan', data.kegiatan);
+    if (data.foto) fd.append('foto_customer', data.foto);
+    return request<{ message: string; data: TestimoniItem }>('/testimonis', { method: 'POST', body: fd });
+  },
   update: (id: number, data: Partial<TestimoniItem>) =>
     request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  /** Admin: update review including optional new photo */
+  updateWithFoto: (id: number, data: Partial<TestimoniItem> & { foto?: File | null; remove_foto?: boolean }) => {
+    const fd = new FormData();
+    if (data.nama_customer !== undefined) fd.append('nama_customer', data.nama_customer);
+    if (data.rating !== undefined) fd.append('rating', String(data.rating));
+    if (data.isi_review !== undefined) fd.append('isi_review', data.isi_review);
+    if (data.produk_disewa !== undefined) fd.append('produk_disewa', data.produk_disewa ?? '');
+    if (data.kegiatan !== undefined) fd.append('kegiatan', data.kegiatan ?? '');
+    if (data.is_approved !== undefined) fd.append('is_approved', data.is_approved ? '1' : '0');
+    if (data.foto) fd.append('foto_customer', data.foto);
+    if (data.remove_foto) fd.append('remove_foto', '1');
+    return request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/update`, { method: 'POST', body: fd });
+  },
+  approve: (id: number) =>
+    request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/approve`, { method: 'PATCH' }),
+  unapprove: (id: number) =>
+    request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}/unapprove`, { method: 'PATCH' }),
   delete: (id: number) =>
     request<{ message: string }>(`/admin/testimonis/${id}`, { method: 'DELETE' }),
 };
@@ -275,13 +312,15 @@ export function toProduct(b: Barang): Product {
     name: b.nama_barang,
     category: b.kategori?.nama_kategori ?? '',
     price: Number(b.harga_per_hari),
-    rating: 4.5 + Math.random() * 0.5, // placeholder until ratings table exists
-    reviews: Math.floor(50 + Math.random() * 300),
+    rating: b.rating ?? 4.5,
+    reviews: b.jumlah_review ?? 0,
     image: b.fotos?.[0]?.url_foto
       ? (b.fotos[0].url_foto.startsWith('/') ? `http://localhost:8000${b.fotos[0].url_foto}` : b.fotos[0].url_foto)
       : '',
     available: b.is_aktif && b.stok_total > 0,
-    description: b.spesifikasi ?? undefined,
+    description: b.spesifikasi
+      ? b.spesifikasi.split(/\n+Fitur:/i)[0].trim()
+      : undefined,
     features: b.spesifikasi
       ? b.spesifikasi
           .split('\n')
@@ -294,7 +333,15 @@ export function toProduct(b: Barang): Product {
 
 // ── Ketersediaan ─────────────────────────────────────────────────────
 
+export interface TodayAvailability {
+  id_barang: number;
+  stok_tersedia: number;
+  tersedia: boolean;
+}
+
 export const ketersediaanApi = {
+  /** Public: check stok tersedia semua barang untuk hari ini */
+  checkToday: () => request<TodayAvailability[]>('/ketersediaan/today'),
   getAll: (idBarang?: number) => {
     const qs = idBarang ? `?id_barang=${idBarang}` : '';
     return request<PaginatedResponse<Ketersediaan>>(`/admin/ketersediaan${qs}`);
@@ -323,3 +370,4 @@ export const ketersediaanApi = {
   delete: (id: number) =>
     request<{ message: string }>(`/admin/ketersediaan/${id}`, { method: 'DELETE' }),
 };
+
