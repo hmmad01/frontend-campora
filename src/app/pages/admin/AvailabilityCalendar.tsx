@@ -89,38 +89,18 @@ function ProductCalendarItem({ product }: { product: Barang }) {
 
     setSaving(true);
     try {
-      // Iterate over selected dates and decide create or delete based on current cell color
-      for (const dateStr of selectedDates) {
-        const color = cellColors[dateStr];
-        if (color === "merah") {
-          // Create new booking if not already exists for this date
-          const alreadyExists = ketersediaans.some(k => {
-            const mulai = k.tanggal_mulai.split("T")[0];
-            const selesai = k.tanggal_selesai.split("T")[0];
-            return dateStr >= mulai && dateStr <= selesai;
-          });
-          if (!alreadyExists) {
-            await ketersediaanApi.create({
-              id_barang: product.id_barang,
-              id_admin: adminData.id_admin,
-              tanggal_mulai: dateStr,
-              tanggal_selesai: dateStr,
-              stok_disewa: 1,
-              catatan: "Manual block from calendar",
-            });
-          }
-        } else if (color === "hijau") {
-          // Delete any existing booking that covers this date
-          for (const k of ketersediaans) {
-            const mulai = k.tanggal_mulai.split("T")[0];
-            const selesai = k.tanggal_selesai.split("T")[0];
-            if (dateStr >= mulai && dateStr <= selesai) {
-              await ketersediaanApi.delete(k.id_ketersediaan);
-              break; // assume one block per date
-            }
-          }
-        }
-      }
+      // Create array of changes
+      const changes = selectedDates.map(dateStr => ({
+        date: dateStr,
+        status: cellColors[dateStr] as 'merah' | 'hijau'
+      }));
+
+      // Send bulk sync to backend
+      await ketersediaanApi.sync({
+        id_barang: product.id_barang,
+        id_admin: adminData.id_admin,
+        changes
+      });
 
       // Refresh data after changes
       setCellColors({});

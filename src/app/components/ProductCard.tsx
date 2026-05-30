@@ -13,8 +13,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   Carrier: 'bg-blue-100 text-blue-700',
   'Sleeping Bag': 'bg-purple-100 text-purple-700',
   Perlengkapan: 'bg-yellow-100 text-yellow-700',
-  Pakaian: 'bg-pink-100 text-pink-700',
-  Sepatu: 'bg-orange-100 text-orange-700',
 };
 
 interface Props {
