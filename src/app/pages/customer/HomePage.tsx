@@ -63,7 +63,7 @@ function CategoryCard({ image, icon, label, href }: CategoryCardProps) {
 const categories = [
   { image: imgTenda, icon: <Tent size={36} className="text-white" />, label: "TENDA", href: "/katalog?kategori=tenda" },
   { image: imgCarrier, icon: <Backpack size={36} className="text-white" />, label: "CARRIER", href: "/katalog?kategori=carrier" },
-  { image: imgSleeping, icon: <Flame size={36} className="text-white" />, label: "SLEEPING BAG", href: "/katalog?kategori=sleeping" },
+  { image: imgSleeping, icon: <Flame size={36} className="text-white" />, label: "SLEEPING BAG", href: "/katalog?kategori=sleeping-bag" },
   { image: imgPerlengkapan, icon: <Compass size={36} className="text-white" />, label: "PERLENGKAPAN", href: "/katalog?kategori=perlengkapan" },
 ];
 
