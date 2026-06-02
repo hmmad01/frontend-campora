@@ -312,7 +312,7 @@ export function toProduct(b: Barang): Product {
     name: b.nama_barang,
     category: b.kategori?.nama_kategori ?? '',
     price: Number(b.harga_per_hari),
-    rating: b.rating ?? 4.5,
+    rating: b.rating ?? 0,
     reviews: b.jumlah_review ?? 0,
     image: b.fotos?.[0]?.url_foto
       ? (b.fotos[0].url_foto.startsWith('/') ? `http://localhost:8000${b.fotos[0].url_foto}` : b.fotos[0].url_foto)
