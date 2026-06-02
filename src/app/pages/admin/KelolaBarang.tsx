@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, X, Upload, Loader2, AlertCircle, RefreshCw } from "lucide-react";
+import { Plus, Edit, Trash2, X, Upload, Loader2, AlertCircle, RefreshCw, Search } from "lucide-react";
 import { useToast, ToastContainer } from "../../components/Toast";
 import {
   barangApi,
@@ -71,6 +71,7 @@ export default function ProductManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Barang | null>(null);
   const [formData, setFormData] = useState({
@@ -237,6 +238,16 @@ export default function ProductManagement() {
           <p className="text-sm text-gray-600 mt-1">Kelola semua barang rental — {products.length} barang</p>
         </div>
         <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Cari barang..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm w-64"
+            />
+          </div>
           <button onClick={fetchData} className="flex items-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors">
             <RefreshCw size={18} />
           </button>
@@ -267,7 +278,12 @@ export default function ProductManagement() {
                 </td>
               </tr>
             ) : (
-              products.map((product) => (
+              products
+                .filter(product => 
+                  product.nama_barang.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                  (product.merk && product.merk.toLowerCase().includes(searchQuery.toLowerCase()))
+                )
+                .map((product) => (
                 <tr key={product.id_barang} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">

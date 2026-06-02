@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import {
   ChevronLeft, ChevronRight, Loader2, AlertCircle,
   Plus, Pencil, Trash2, X, Save, Package, CalendarDays,
-  Info,
+  Info, Search
 } from "lucide-react";
 import {
   barangApi,
@@ -466,6 +466,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
 export default function AvailabilityCalendar() {
   const [products, setProducts] = useState<Barang[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const toast = useToast();
@@ -522,19 +523,36 @@ export default function AvailabilityCalendar() {
       </div>
 
       <div className="mb-5">
-        <label className="block text-xs text-gray-500 mb-1.5 font-semibold">BARANG</label>
-        <select
-          value={selectedProductId}
-          onChange={e => setSelectedProductId(Number(e.target.value))}
-          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#2F855A]"
-        >
-          <option value={0}>— Pilih barang —</option>
-          {products.map(p => (
-            <option key={p.id_barang} value={p.id_barang}>
-              {p.nama_barang} (Stok: {p.stok_total})
-            </option>
-          ))}
-        </select>
+        <label className="block text-xs text-gray-500 mb-1.5 font-semibold">CARI & PILIH BARANG</label>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative w-full sm:w-1/3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Cari nama barang..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2F855A]"
+            />
+          </div>
+          <select
+            value={selectedProductId}
+            onChange={e => setSelectedProductId(Number(e.target.value))}
+            className="w-full sm:flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#2F855A]"
+          >
+            <option value={0}>— Pilih barang —</option>
+            {products
+              .filter(p => 
+                p.nama_barang.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (p.merk && p.merk.toLowerCase().includes(searchQuery.toLowerCase()))
+              )
+              .map(p => (
+              <option key={p.id_barang} value={p.id_barang}>
+                {p.nama_barang} (Stok: {p.stok_total})
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className={`flex-1 overflow-y-auto pr-1 pb-8 ${!selectedProductId ? "opacity-40 pointer-events-none" : ""}`}>
