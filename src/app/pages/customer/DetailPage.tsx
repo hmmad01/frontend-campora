@@ -35,11 +35,8 @@ export default function DetailPage() {
         // Stok total dari data barang
         setStokTotal(barang.stok_total);
 
-        // Cari stok tersedia hari ini
-        const avail = Array.isArray(availabilityList)
-          ? availabilityList.find((a: any) => a.id_barang === barang.id_barang)
-          : null;
-        setStokTersedia(avail ? avail.stok_tersedia : barang.stok_total);
+        // Note: Stok tersedia is now handled by the separate useEffect below
+        // based on the selected `days` to get accurate data for the date range.
         
         // Calculate rating from testimonials
         let totalRating = 0;
@@ -65,6 +62,29 @@ export default function DetailPage() {
     };
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    if (!id || stokTotal === 0) return;
+    const fetchAvailability = async () => {
+      try {
+        const today = new Date();
+        const endDate = new Date(today);
+        endDate.setDate(today.getDate() + days - 1);
+        
+        const mulai = today.toISOString().split('T')[0];
+        const selesai = endDate.toISOString().split('T')[0];
+        
+        const res = await ketersediaanApi.check(Number(id), mulai, selesai);
+        setStokTersedia(res.stok_tersedia);
+        if (qty > res.stok_tersedia) {
+          setQty(Math.max(1, res.stok_tersedia));
+        }
+      } catch (err) {
+        console.error('Failed to fetch availability:', err);
+      }
+    };
+    fetchAvailability();
+  }, [id, days, stokTotal]);
 
   if (loading) {
     return (
