@@ -30,6 +30,11 @@ export function ProductCard({ product, variant = 'grid' }: Props) {
             Tersedia
           </span>
         )}
+        {!isScroll && !product.available && (
+          <span className="absolute top-2 left-2 z-10 text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-medium">
+            Tidak Tersedia
+          </span>
+        )}
         {isScroll && (
           <span className="absolute top-2 left-2 z-10 text-[10px] bg-[#d9d9d9] text-[#525252] px-2 py-0.5 rounded-full font-medium tracking-wide">
             POPULER

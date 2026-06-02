@@ -76,13 +76,13 @@ export default function Dashboard() {
           icon={<Calendar className="text-green-600" size={24} />}
           bgColor="bg-green-100"
           value={stats?.barang_aktif ?? 0}
-          label="Barang Aktif"
+          label="Barang Tersedia"
         />
         <StatCard
           icon={<TrendingUp className="text-orange-600" size={24} />}
           bgColor="bg-orange-100"
           value={stats?.sewa_hari_ini ?? 0}
-          label="Sedang Disewa Hari Ini"
+          label="Unit Disewa Hari Ini"
         />
         <StatCard
           icon={<Layers className="text-purple-600" size={24} />}

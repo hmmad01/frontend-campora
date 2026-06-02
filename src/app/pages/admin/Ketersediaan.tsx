@@ -484,10 +484,94 @@ export default function AvailabilityCalendar() {
     );
   }
 
+  const ActiveBookingsList = () => {
+    const [bookings, setBookings] = useState<Ketersediaan[]>([]);
+    const [loadingBookings, setLoadingBookings] = useState(true);
+
+    useEffect(() => {
+      ketersediaanApi.getAll().then(res => {
+        const today = new Date().toISOString().split('T')[0];
+        // Urutkan dari yang terbaru/terdekat
+        const active = res.data.filter(b => b.tanggal_selesai >= today);
+        setBookings(active);
+      }).catch(err => console.error(err))
+        .finally(() => setLoadingBookings(false));
+    }, []);
+
+    if (loadingBookings) {
+      return (
+        <div className="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center">
+          <Loader2 className="animate-spin text-[#2F855A]" size={32} />
+        </div>
+      );
+    }
+
+    if (bookings.length === 0) {
+      return (
+        <div className="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center text-gray-400 flex-col gap-2">
+          <Package size={32} className="text-gray-300" />
+          <p>Belum ada booking aktif saat ini</p>
+        </div>
+      );
+    }
+
+    const formatDate = (dateStr: string) => {
+      try {
+        return new Date(dateStr).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric'
+        });
+      } catch {
+        return dateStr;
+      }
+    };
+
+    return (
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+            <CalendarDays size={18} className="text-[#2F855A]" />
+            Daftar Booking Aktif & Mendatang
+          </h4>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 text-gray-600 font-medium">
+              <tr>
+                <th className="px-4 py-3 rounded-l-xl">Barang</th>
+                <th className="px-4 py-3">Tanggal Mulai</th>
+                <th className="px-4 py-3">Tanggal Selesai</th>
+                <th className="px-4 py-3">Stok Disewa</th>
+                <th className="px-4 py-3 rounded-r-xl">Catatan</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {bookings.map(b => (
+                <tr 
+                  key={b.id_ketersediaan} 
+                  className="hover:bg-[#F0FDF4] cursor-pointer transition-colors" 
+                  onClick={() => setSelectedProductId(b.id_barang)}
+                  title="Klik untuk melihat kalender barang ini"
+                >
+                  <td className="px-4 py-3 font-medium text-[#2F855A]">{b.barang?.nama_barang || `ID: ${b.id_barang}`}</td>
+                  <td className="px-4 py-3 text-gray-600">{formatDate(b.tanggal_mulai)}</td>
+                  <td className="px-4 py-3 text-gray-600">{formatDate(b.tanggal_selesai)}</td>
+                  <td className="px-4 py-3 text-gray-900 font-medium">{b.stok_disewa} unit</td>
+                  <td className="px-4 py-3 text-gray-500 italic max-w-xs truncate">{b.catatan || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   const selectedProduct = products.find(p => p.id_barang === selectedProductId);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="pb-8">
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 
       <div className="mb-6">
@@ -501,7 +585,7 @@ export default function AvailabilityCalendar() {
       <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-5 text-sm text-blue-700">
         <Info size={16} className="shrink-0 mt-0.5" />
         <span>
-          Barang yang <b>stok penuh terpakai</b> pada suatu tanggal akan <b>otomatis disembunyikan</b> dari halaman Katalog customer pada tanggal tersebut.
+          Barang yang <b>stok penuh terpakai</b> pada suatu tanggal akan otomatis mendapat label <b>Tidak Tersedia</b> di halaman Katalog customer.
         </span>
       </div>
 
@@ -538,7 +622,7 @@ export default function AvailabilityCalendar() {
         </div>
       </div>
 
-      <div className={`flex-1 overflow-y-auto pr-1 pb-8 ${!selectedProductId ? "opacity-40 pointer-events-none" : ""}`}>
+      <div className="pb-4">
         {selectedProduct ? (
           <ProductCalendarItem
             key={selectedProduct.id_barang}
@@ -546,9 +630,7 @@ export default function AvailabilityCalendar() {
             onDataChange={() => {}}
           />
         ) : (
-          <div className="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center text-gray-400">
-            Pilih barang terlebih dahulu untuk melihat kalender
-          </div>
+          <ActiveBookingsList />
         )}
       </div>
     </div>
