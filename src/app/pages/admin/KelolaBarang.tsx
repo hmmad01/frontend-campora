@@ -39,13 +39,6 @@ const ProductFormField = ({ label, ...props }: ProductFormFieldProps) => (
   </div>
 );
 
-const ProductStatusBadge = ({ isAktif }: { isAktif: boolean }) => (
-  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-    isAktif ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-  }`}>
-    {isAktif ? "Aktif" : "Nonaktif"}
-  </span>
-);
 
 const ProductActionButtons = ({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) => (
   <div className="flex items-center gap-2">
@@ -133,10 +126,10 @@ export default function ProductManagement() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menonaktifkan barang ini?")) return;
+    if (!confirm("Apakah Anda yakin ingin MENGHAPUS permanen barang ini? Data tidak bisa dikembalikan.")) return;
     try {
       await barangApi.delete(id);
-      toast.success("Barang berhasil dinonaktifkan!");
+      toast.success("Barang berhasil dihapus!");
       await fetchData();
     } catch (err: any) {
       toast.error(err.message || "Gagal menghapus barang");
@@ -258,7 +251,6 @@ export default function ProductManagement() {
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Kategori</th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Harga/Hari</th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Stok</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Aksi</th>
             </tr>
           </thead>
@@ -295,7 +287,6 @@ export default function ProductManagement() {
                   <td className="px-6 py-4 text-sm text-gray-600">{getKategoriName(product.id_kategori)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{formatRupiah(product.harga_per_hari)}</td>
                   <td className="px-6 py-4 text-sm text-gray-900">{product.stok_total}</td>
-                  <td className="px-6 py-4"><ProductStatusBadge isAktif={product.is_aktif} /></td>
                   <td className="px-6 py-4"><ProductActionButtons onEdit={() => handleEdit(product)} onDelete={() => handleDelete(product.id_barang)} /></td>
                 </tr>
               ))

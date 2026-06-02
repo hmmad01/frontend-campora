@@ -60,12 +60,13 @@ export default function KatalogPage() {
         }
 
         const converted = barangRes.data
-          .filter((b) => {
-            if (b.id_barang in availMap) return availMap[b.id_barang];
-            return b.is_aktif && b.stok_total > 0;
-          })
           .map((b) => {
             const product = toProduct(b);
+            if (b.id_barang in availMap) {
+              product.available = availMap[b.id_barang];
+            } else if (b.stok_total <= 0) {
+              product.available = false;
+            }
             const key = b.nama_barang.trim().toLowerCase();
             if (ratingMap[key] && ratingMap[key].count > 0) {
               product.rating = Math.round((ratingMap[key].total / ratingMap[key].count) * 10) / 10;
