@@ -1,10 +1,3 @@
-/**
- * @file AvailabilityCalendar.tsx (Ketersediaan)
- * @description Halaman kalender admin untuk mengelola stok ketersediaan barang per periode.
- *              Admin dapat menambah, mengedit, dan menghapus periode booking secara real-time.
- *              Terintegrasi penuh dengan backend Laravel — perubahan langsung memengaruhi
- *              tampilan customer (barang habis stok otomatis disembunyikan di frontend customer).
- */
 
 import { useState, useEffect } from "react";
 import {
@@ -23,8 +16,6 @@ import { useToast, ToastContainer } from "../../components/Toast";
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 const DAYS   = ["Min","Sen","Sel","Rab","Kam","Jum","Sab"];
 
-// ── Helpers ───────────────────────────────────────────────────────────
-
 function toDateStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
@@ -32,8 +23,6 @@ function toDateStr(d: Date): string {
 function today(): string {
   return toDateStr(new Date());
 }
-
-// ── Booking Form Modal ────────────────────────────────────────────────
 
 interface BookingFormProps {
   product: Barang;
@@ -179,8 +168,6 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
   );
 }
 
-// ── ProductCalendarItem ────────────────────────────────────────────────
-
 function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDataChange?: () => void }) {
   const [month, setMonth] = useState(new Date());
   const [ketersediaans, setKetersediaans] = useState<Ketersediaan[]>([]);
@@ -210,7 +197,6 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
   const totalDays = new Date(y, m + 1, 0).getDate();
   const startOffset = new Date(y, m, 1).getDay();
 
-  // Find booking(s) that overlap a given day
   const getBookingsForDay = (day: number): Ketersediaan[] => {
     const dateStr = `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
     return ketersediaans.filter(k => {
@@ -220,7 +206,6 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
     });
   };
 
-  // Total stok disewa on a day
   const getStokDisewadOnDay = (day: number): number => {
     return getBookingsForDay(day).reduce((sum, k) => sum + k.stok_disewa, 0);
   };
@@ -460,8 +445,6 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
     </>
   );
 }
-
-// ── Main Page ──────────────────────────────────────────────────────────
 
 export default function AvailabilityCalendar() {
   const [products, setProducts] = useState<Barang[]>([]);

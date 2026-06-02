@@ -1,10 +1,3 @@
-/**
- * @file ReviewManagement.tsx
- * @description Halaman admin untuk mengelola review/testimoni pelanggan.
- *              CRUD + Approve/Unapprove terhubung ke backend Laravel via API.
- *              Admin bisa menyortir review yang ditampilkan di frontend customer
- *              dengan meng-approve / unapprove setiap testimoni.
- */
 
 import { useState, useEffect, useRef } from "react";
 import {
@@ -167,7 +160,6 @@ export default function ReviewManagement() {
     <div className="h-full flex flex-col">
       <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-xl font-semibold text-gray-900">Kelola Review</h3>
@@ -181,7 +173,6 @@ export default function ReviewManagement() {
         </button>
       </div>
 
-      {/* Stats + Filter bar */}
       <div className="flex items-center gap-3 mb-5 flex-wrap">
         <div className="flex items-center gap-1 text-xs text-gray-500 mr-1">
           <Filter size={13} /> Filter:
@@ -285,7 +276,6 @@ export default function ReviewManagement() {
                 />
               </div>
 
-              {/* Foto Customer */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Foto Customer</label>
                 <div className="flex items-center gap-4">
@@ -340,7 +330,6 @@ export default function ReviewManagement() {
                 </div>
               </div>
 
-              {/* Approve toggle in form */}
               <div className="flex items-center gap-3">
                 <label className="block text-sm font-medium text-gray-700">Tampilkan di Frontend</label>
                 <button
@@ -402,7 +391,6 @@ export default function ReviewManagement() {
                   <div className="flex items-center gap-3 mb-1 flex-wrap">
                     <p className="text-sm font-medium text-gray-900">{r.nama_customer}</p>
                     {renderStars(r.rating)}
-                    {/* Status badge */}
                     {r.is_approved ? (
                       <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
                         <CheckCircle size={10} /> Tampil di frontend
@@ -436,7 +424,6 @@ export default function ReviewManagement() {
                 </div>
 
                 <div className="flex items-center gap-1 shrink-0">
-                  {/* Approve / Unapprove toggle */}
                   <button
                     onClick={() => handleToggleApprove(r)}
                     disabled={togglingId === r.id_testimoni}

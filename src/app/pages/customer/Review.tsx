@@ -1,10 +1,3 @@
-/**
- * @file ReviewPage.tsx
- * @description Halaman ulasan (reviews) dan testimoni dari pelanggan setia CAMPORA.
- *              Data di-load dari backend Laravel (hanya review yang sudah di-approve admin).
- *              Customer bisa menambah review baru — review akan masuk dalam status "pending"
- *              hingga disetujui admin melalui panel admin.
- */
 
 import { useState, useEffect, useRef } from 'react';
 import { Star, Quote, X, Plus, Send, ImagePlus, Loader2, CheckCircle, ChevronDown } from 'lucide-react';
@@ -12,11 +5,9 @@ import { testimoniApi, barangApi, type TestimoniItem } from '../../api';
 
 import imgHero from '@/images/header REVIEW.png';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const poppins = { fontFamily: "'Poppins', sans-serif" } as const;
 
-/** Generates a consistent color from a name string (for avatar initials). */
 function nameToColor(name: string): string {
   const colors = [
     '#124756', '#2F855A', '#B7791F', '#6B46C1', '#C05621',
@@ -27,7 +18,6 @@ function nameToColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-/** Renders avatar: uploaded image or colored initials block. */
 function Avatar({ src, name, size = 36 }: { src?: string | null; name: string; size?: number }) {
   const initials = name
     .split(' ')
@@ -43,7 +33,6 @@ function Avatar({ src, name, size = 36 }: { src?: string | null; name: string; s
         className="w-full h-full object-cover"
         style={{ width: size, height: size }}
         onError={(e) => {
-          // Fallback to initials on broken image
           (e.target as HTMLImageElement).style.display = 'none';
         }}
       />
@@ -60,7 +49,6 @@ function Avatar({ src, name, size = 36 }: { src?: string | null; name: string; s
   );
 }
 
-// ── TestimoniCard ─────────────────────────────────────────────────────────────
 
 function TestimoniCard({ item }: { item: TestimoniItem }) {
   const { nama_customer, isi_review, rating, foto_customer } = item;
@@ -116,7 +104,6 @@ function TestimoniCard({ item }: { item: TestimoniItem }) {
   );
 }
 
-// ── Review Form Modal ─────────────────────────────────────────────────────────
 
 interface ReviewFormProps {
   onClose: () => void;
@@ -347,7 +334,6 @@ function ReviewFormModal({ onClose, onSuccess }: ReviewFormProps) {
   );
 }
 
-// ── Halaman Utama ─────────────────────────────────────────────────────────────
 
 export default function ReviewPage() {
   const [reviews, setReviews] = useState<TestimoniItem[]>([]);
@@ -359,7 +345,6 @@ export default function ReviewPage() {
       const res = await testimoniApi.getAll();
       setReviews(res.data);
     } catch {
-      // Silently ignore — page still shows UI
     } finally {
       setLoading(false);
     }

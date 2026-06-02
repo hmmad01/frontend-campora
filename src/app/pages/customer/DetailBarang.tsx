@@ -1,8 +1,3 @@
-/**
- * @file DetailPage.tsx
- * @description Halaman detail produk untuk menampilkan spesifikasi barang, harga per hari, asuransi, durasi sewa, dan tombol hubungi admin via WhatsApp.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
@@ -32,13 +27,9 @@ export default function DetailPage() {
         
         const p = toProduct(barang);
         
-        // Stok total dari data barang
         setStokTotal(barang.stok_total);
 
-        // Note: Stok tersedia is now handled by the separate useEffect below
-        // based on the selected `days` to get accurate data for the date range.
         
-        // Calculate rating from testimonials
         let totalRating = 0;
         let count = 0;
         for (const t of testimoniRes.data) {

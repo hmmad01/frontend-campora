@@ -1,8 +1,3 @@
-/**
- * @file KatalogPage.tsx
- * @description Halaman katalog produk sewa yang memiliki fitur pencarian nama barang, filter berdasarkan kategori produk, dan pengurutan (sorting) produk.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
@@ -50,13 +45,11 @@ export default function KatalogPage() {
           ketersediaanApi.checkToday(),
         ]);
 
-        // Build availability map: id_barang -> tersedia (bool)
         const availMap: Record<number, boolean> = {};
         for (const a of todayAvailRes) {
           availMap[a.id_barang] = a.tersedia;
         }
 
-        // Build a map: produk_disewa -> { totalRating, count }
         const ratingMap: Record<string, { total: number; count: number }> = {};
         for (const t of testimoniRes.data) {
           if (!t.produk_disewa) continue;
@@ -66,10 +59,8 @@ export default function KatalogPage() {
           ratingMap[key].count += 1;
         }
 
-        // Convert barangs to Products — hide items with 0 stock today
         const converted = barangRes.data
           .filter((b) => {
-            // If availability data exists for this item, use it; else assume tersedia
             if (b.id_barang in availMap) return availMap[b.id_barang];
             return b.is_aktif && b.stok_total > 0;
           })

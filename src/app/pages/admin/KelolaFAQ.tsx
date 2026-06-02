@@ -1,8 +1,3 @@
-/**
- * @file FAQManagement.tsx
- * @description Halaman admin untuk mengelola FAQ (Frequently Asked Questions).
- *              CRUD lengkap terhubung ke backend Laravel via API.
- */
 
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Loader2, AlertCircle, X, Save, HelpCircle } from "lucide-react";

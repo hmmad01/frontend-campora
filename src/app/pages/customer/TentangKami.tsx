@@ -1,7 +1,3 @@
-/**
- * @file TentangPage.tsx
- * @description Halaman "Tentang Kami" yang menjelaskan profil CAMPORA, cerita pendirian, komitmen layanan, peta lokasi fisik, dan statistik kepuasan pelanggan.
- */
 
 import { Users, Star, Shield, Clock } from 'lucide-react';
 import { FeatureCard } from '../../components/FeatureCard';

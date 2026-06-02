@@ -1,7 +1,3 @@
-/**
- * @file Navbar.tsx
- * @description Komponen navigasi atas (Navbar) aplikasi CAMPORA. Menyediakan menu navigasi responsif (untuk desktop & mobile dropdown) serta tombol WhatsApp.
- */
 
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
@@ -40,9 +36,8 @@ export function Navbar() {
             <li key={link.href}>
               <Link
                 to={link.href}
-                className={`relative px-3 py-2 text-sm font-medium transition-colors ${
-                  isActive(link.href) ? 'text-[#124756]' : 'text-black hover:text-[#124756]'
-                }`}
+                className={`relative px-3 py-2 text-sm font-medium transition-colors ${isActive(link.href) ? 'text-[#124756]' : 'text-black hover:text-[#124756]'
+                  }`}
               >
                 {link.label}
                 {isActive(link.href) && (
@@ -80,9 +75,8 @@ export function Navbar() {
               key={link.href}
               to={link.href}
               onClick={() => setIsOpen(false)}
-              className={`py-2 text-sm font-medium border-b border-gray-300 last:border-0 ${
-                isActive(link.href) ? 'text-[#124756]' : 'text-black'
-              }`}
+              className={`py-2 text-sm font-medium border-b border-gray-300 last:border-0 ${isActive(link.href) ? 'text-[#124756]' : 'text-black'
+                }`}
             >
               {link.label}
             </Link>

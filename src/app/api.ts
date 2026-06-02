@@ -1,14 +1,5 @@
-/**
- * @file api.ts
- * @description Konfigurasi base API client untuk berkomunikasi dengan campora-backend (Laravel).
- *              Semua request ke backend melewati helper ini.
- */
-
 const API_BASE_URL = 'http://localhost:8000/api';
 
-/**
- * Generic fetch wrapper yang otomatis set header JSON dan handle error.
- */
 async function request<T>(
   endpoint: string,
   options: RequestInit = {}
@@ -20,7 +11,6 @@ async function request<T>(
     ...(options.headers || {}),
   };
 
-  // Only set Content-Type for non-FormData bodies
   if (!(options.body instanceof FormData)) {
     (headers as Record<string, string>)['Content-Type'] = 'application/json';
   }
@@ -39,7 +29,6 @@ async function request<T>(
   return res.json();
 }
 
-// ── Auth ─────────────────────────────────────────────────────────────
 
 export interface AdminUser {
   id_admin: number;
@@ -60,7 +49,6 @@ export const authApi = {
     }),
 };
 
-// ── Dashboard ────────────────────────────────────────────────────────
 
 export interface DashboardStats {
   total_barang: number;
@@ -74,7 +62,6 @@ export const dashboardApi = {
   getStats: () => request<DashboardStats>('/admin/inventory/dashboard'),
 };
 
-// ── Kategori ─────────────────────────────────────────────────────────
 
 export interface Kategori {
   id_kategori: number;
@@ -93,7 +80,6 @@ export const kategoriApi = {
     request(`/admin/kategori/${id}`, { method: 'DELETE' }),
 };
 
-// ── Barang ───────────────────────────────────────────────────────────
 
 export interface FotoBarang {
   id_foto: number;
@@ -158,7 +144,6 @@ export const barangApi = {
     request<{ message: string }>(`/admin/barangs/${id}`, { method: 'DELETE' }),
 };
 
-// ── Foto ─────────────────────────────────────────────────────────────
 
 export const fotoApi = {
   upload: (idBarang: number, file: File) => {
@@ -173,7 +158,6 @@ export const fotoApi = {
     request<{ message: string }>(`/admin/fotos/${idFoto}`, { method: 'DELETE' }),
 };
 
-// ── Ketersediaan ─────────────────────────────────────────────────────
 
 export interface Ketersediaan {
   id_ketersediaan: number;
@@ -198,7 +182,6 @@ export interface AvailabilityCheck {
   tanggal_selesai: string;
 }
 
-// ── FAQ (Public) ─────────────────────────────────────────────────────
 
 export interface FaqItem {
   id_faq: number;
@@ -218,7 +201,6 @@ export const faqApi = {
     request<{ message: string }>(`/admin/faqs/${id}`, { method: 'DELETE' }),
 };
 
-// ── Testimoni (Public + Admin) ───────────────────────────────────────
 
 export interface TestimoniItem {
   id_testimoni: number;
@@ -233,11 +215,8 @@ export interface TestimoniItem {
 }
 
 export const testimoniApi = {
-  /** Public: only approved reviews */
   getAll: () => request<PaginatedResponse<TestimoniItem>>('/testimonis'),
-  /** Admin: all reviews regardless of approval */
   adminGetAll: () => request<PaginatedResponse<TestimoniItem>>('/admin/testimonis'),
-  /** Admin: create a review directly */
   create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean; foto?: File | null }) => {
     const fd = new FormData();
     fd.append('nama_customer', data.nama_customer);
@@ -249,7 +228,6 @@ export const testimoniApi = {
     if (data.foto) fd.append('foto_customer', data.foto);
     return request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: fd });
   },
-  /** Customer: submit review with optional photo (FormData) */
   submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; foto?: File | null }) => {
     const fd = new FormData();
     fd.append('nama_customer', data.nama_customer);
@@ -262,7 +240,6 @@ export const testimoniApi = {
   },
   update: (id: number, data: Partial<TestimoniItem>) =>
     request<{ message: string; data: TestimoniItem }>(`/admin/testimonis/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  /** Admin: update review including optional new photo */
   updateWithFoto: (id: number, data: Partial<TestimoniItem> & { foto?: File | null; remove_foto?: boolean }) => {
     const fd = new FormData();
     if (data.nama_customer !== undefined) fd.append('nama_customer', data.nama_customer);
@@ -283,7 +260,6 @@ export const testimoniApi = {
     request<{ message: string }>(`/admin/testimonis/${id}`, { method: 'DELETE' }),
 };
 
-// ── Paket (Public + Admin) ───────────────────────────────────────────
 
 export interface PaketItem {
   id_paket: number;
@@ -307,14 +283,9 @@ export const paketApi = {
     request<{ message: string }>(`/admin/pakets/${id}`, { method: 'DELETE' }),
 };
 
-// ── Helper: Backend Barang → Frontend Product ────────────────────────
 
 import type { Product } from './types';
 
-/**
- * Konversi data Barang dari backend API ke format Product yang digunakan
- * oleh komponen-komponen customer (ProductCard, DetailPage, dll).
- */
 export function toProduct(b: Barang): Product {
   return {
     id: String(b.id_barang),
@@ -332,15 +303,13 @@ export function toProduct(b: Barang): Product {
       : undefined,
     features: b.spesifikasi
       ? b.spesifikasi
-          .split('\n')
-          .filter((l) => l.startsWith('- '))
-          .map((l) => l.replace('- ', ''))
+        .split('\n')
+        .filter((l) => l.startsWith('- '))
+        .map((l) => l.replace('- ', ''))
       : undefined,
     brand: b.merk ?? undefined,
   };
 }
-
-// ── Ketersediaan ─────────────────────────────────────────────────────
 
 export interface TodayAvailability {
   id_barang: number;
@@ -349,9 +318,7 @@ export interface TodayAvailability {
 }
 
 export const ketersediaanApi = {
-  /** Public: check stok tersedia semua barang untuk hari ini */
   checkToday: () => request<TodayAvailability[]>('/ketersediaan/today'),
-  /** Public: check stok tersedia untuk satu barang hari ini */
   checkTodayById: (idBarang: number) => request<TodayAvailability>(`/ketersediaan/today/${idBarang}`),
   getAll: (idBarang?: number) => {
     const qs = idBarang ? `?id_barang=${idBarang}` : '';

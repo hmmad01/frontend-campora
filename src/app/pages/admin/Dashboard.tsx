@@ -1,7 +1,3 @@
-/**
- * @file Dashboard.tsx
- * @description Halaman dashboard admin utama CAMPORA. Menyajikan ringkasan statistik dari backend API.
- */
 
 import { useEffect, useState } from "react";
 import { Package, Calendar, TrendingUp, Layers, Loader2, AlertCircle } from "lucide-react";
