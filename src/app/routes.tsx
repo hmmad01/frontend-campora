@@ -6,22 +6,22 @@
 import { createBrowserRouter, Outlet } from 'react-router';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
-import HomePage from './pages/customer/HomePage';
+import HomePage from './pages/customer/Beranda';
 
-import ReviewPage from './pages/customer/ReviewPage';
-import KatalogPage from './pages/customer/KatalogPage';
-import PaketPage from './pages/customer/PaketPage';
-import FAQPage from './pages/customer/FAQPage';
-import TentangPage from './pages/customer/TentangPage';
-import DetailPage from './pages/customer/DetailPage';
+import ReviewPage from './pages/customer/Review';
+import KatalogPage from './pages/customer/Katalog';
+import PaketPage from './pages/customer/PaketOutdoor';
+import FAQPage from './pages/customer/FAQ';
+import TentangPage from './pages/customer/TentangKami';
+import DetailPage from './pages/customer/DetailBarang';
 import Login from './pages/admin/Login';
 import AdminLayout from './components/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
-import ProductManagement from './pages/admin/ProductManagement';
-import AvailabilityCalendar from './pages/admin/AvailabilityCalendar';
-import FAQManagement from './pages/admin/FAQManagement';
-import ReviewManagement from './pages/admin/ReviewManagement';
-import PaketManagement from './pages/admin/PaketManagement';
+import ProductManagement from './pages/admin/KelolaBarang';
+import AvailabilityCalendar from './pages/admin/Ketersediaan';
+import FAQManagement from './pages/admin/KelolaFAQ';
+import ReviewManagement from './pages/admin/KelolaReview';
+import PaketManagement from './pages/admin/KelolaPaket';
 
 function Layout() {
   return (
