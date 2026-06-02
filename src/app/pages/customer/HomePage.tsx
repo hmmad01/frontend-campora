@@ -385,9 +385,10 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPopular = async () => {
       try {
-        const [res, todayAvailRes] = await Promise.all([
+        const [res, todayAvailRes, testimoniRes] = await Promise.all([
           barangApi.getAll({ per_page: 20 }),
           ketersediaanApi.checkToday(),
+          testimoniApi.getAll()
         ]);
 
         // Build availability map
@@ -396,14 +397,33 @@ export default function HomePage() {
           availMap[a.id_barang] = a.tersedia;
         }
 
+        // Build a map: produk_disewa -> { totalRating, count }
+        const ratingMap: Record<string, { total: number; count: number }> = {};
+        for (const t of testimoniRes.data) {
+          if (!t.produk_disewa) continue;
+          const key = t.produk_disewa.trim().toLowerCase();
+          if (!ratingMap[key]) ratingMap[key] = { total: 0, count: 0 };
+          ratingMap[key].total += t.rating;
+          ratingMap[key].count += 1;
+        }
+
         // Filter out items with no stock today, then take first 5
         const available = res.data
           .filter((b) => {
             if (b.id_barang in availMap) return availMap[b.id_barang];
             return b.is_aktif && b.stok_total > 0;
           })
-          .slice(0, 5)
-          .map(toProduct);
+          .map((b) => {
+            const product = toProduct(b);
+            const key = b.nama_barang.trim().toLowerCase();
+            if (ratingMap[key] && ratingMap[key].count > 0) {
+              product.rating = Math.round((ratingMap[key].total / ratingMap[key].count) * 10) / 10;
+              product.reviews = ratingMap[key].count;
+            }
+            return product;
+          })
+          .sort((a, b) => b.reviews - a.reviews) // Sort by reviews to get the "Popular" items
+          .slice(0, 5);
 
         setPopularProducts(available);
       } catch (err) {

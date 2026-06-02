@@ -6,23 +6,57 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router';
-import { ArrowLeft, Star, Plus, Minus, Check, Shield, Zap, Loader2 } from 'lucide-react';
-import { barangApi, toProduct } from '../../api';
+import { ArrowLeft, Star, Plus, Minus, Check, Shield, Zap, Loader2, Package } from 'lucide-react';
+import { barangApi, toProduct, testimoniApi, ketersediaanApi } from '../../api';
 import { WhatsAppIcon } from '../../components/icons/SocialIcons';
 import type { Product } from '../../types';
 
 export default function DetailPage() {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [stokTotal, setStokTotal] = useState(0);
+  const [stokTersedia, setStokTersedia] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(1);
+  const [qty, setQty] = useState(1);
 
   useEffect(() => {
     if (!id) return;
     const fetchProduct = async () => {
       try {
-        const barang = await barangApi.getById(Number(id));
-        setProduct(toProduct(barang));
+        const [barang, testimoniRes, availabilityList] = await Promise.all([
+          barangApi.getById(Number(id)),
+          testimoniApi.getAll(),
+          ketersediaanApi.checkToday().catch(() => [] as any),
+        ]);
+        
+        const p = toProduct(barang);
+        
+        // Stok total dari data barang
+        setStokTotal(barang.stok_total);
+
+        // Cari stok tersedia hari ini
+        const avail = Array.isArray(availabilityList)
+          ? availabilityList.find((a: any) => a.id_barang === barang.id_barang)
+          : null;
+        setStokTersedia(avail ? avail.stok_tersedia : barang.stok_total);
+        
+        // Calculate rating from testimonials
+        let totalRating = 0;
+        let count = 0;
+        for (const t of testimoniRes.data) {
+          if (t.produk_disewa && t.produk_disewa.trim().toLowerCase() === p.name.trim().toLowerCase()) {
+            totalRating += t.rating;
+            count += 1;
+          }
+        }
+        
+        if (count > 0) {
+          p.rating = Math.round((totalRating / count) * 10) / 10;
+          p.reviews = count;
+        }
+
+        setProduct(p);
       } catch (err) {
         console.error('Failed to fetch product:', err);
       } finally {
@@ -51,9 +85,9 @@ export default function DetailPage() {
     );
   }
 
-  const total = product.price * days;
+  const total = product.price * days * qty;
   const waMessage = encodeURIComponent(
-    `Halo CAMPORA! Saya ingin menyewa *${product.name}* selama *${days} hari*. Total: Rp ${total.toLocaleString('id-ID')}. Mohon informasi lebih lanjut.`
+    `Halo CAMPORA! Saya ingin menyewa *${product.name}* sebanyak *${qty} unit* selama *${days} hari*. Total: Rp ${total.toLocaleString('id-ID')}. Mohon informasi lebih lanjut.`
   );
 
   return (
@@ -74,9 +108,24 @@ export default function DetailPage() {
         </div>
 
         <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col gap-4">
-          <span className="self-start inline-block bg-[#e5f5ed] text-[#1a8b5e] text-xs px-3 py-1 rounded-full font-medium">
-            {product.category}
-          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-block bg-[#e5f5ed] text-[#1a8b5e] text-xs px-3 py-1 rounded-full font-medium">
+              {product.category}
+            </span>
+            {stokTersedia !== null && (
+              stokTersedia > 0 ? (
+                <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full font-medium border border-green-200">
+                  <Package size={11} />
+                  Tersedia: {stokTersedia} dari {stokTotal}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs px-3 py-1 rounded-full font-medium border border-red-200">
+                  <Package size={11} />
+                  Stok Habis
+                </span>
+              )
+            )}
+          </div>
 
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{product.name}</h1>
 
@@ -95,25 +144,55 @@ export default function DetailPage() {
             <p className="text-xs text-gray-400 mt-0.5">Harga sudah termasuk perawatan dan asuransi</p>
           </div>
 
-          <div className="bg-gray-50 rounded-2xl border border-gray-200 p-4">
-            <p className="text-sm text-gray-600 mb-3">Durasi Sewa (Hari)</p>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setDays(Math.max(1, days - 1))}
-                className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-              >
-                <Minus size={14} />
-              </button>
-              <span className="text-xl font-semibold text-gray-900 w-8 text-center">{days}</span>
-              <button
-                onClick={() => setDays(days + 1)}
-                className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
-              >
-                <Plus size={14} />
-              </button>
+          <div className="bg-gray-50 rounded-2xl border border-gray-200 p-4 space-y-4">
+            {/* Durasi Sewa */}
+            <div>
+              <p className="text-sm text-gray-600 mb-3">Durasi Sewa (Hari)</p>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setDays(Math.max(1, days - 1))}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="text-xl font-semibold text-gray-900 w-8 text-center">{days}</span>
+                <button
+                  onClick={() => setDays(days + 1)}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between">
-              <span className="text-sm text-gray-500">Total:</span>
+
+            {/* Jumlah Barang */}
+            <div className="pt-3 border-t border-gray-200">
+              <p className="text-sm text-gray-600 mb-3">
+                Jumlah Barang
+                {stokTersedia !== null && (
+                  <span className="ml-2 text-xs text-gray-400">(maks. {stokTersedia} unit)</span>
+                )}
+              </p>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                >
+                  <Minus size={14} />
+                </button>
+                <span className="text-xl font-semibold text-gray-900 w-8 text-center">{qty}</span>
+                <button
+                  onClick={() => setQty(Math.min(stokTersedia ?? 99, qty + 1))}
+                  disabled={(stokTersedia !== null && qty >= stokTersedia) || stokTersedia === 0}
+                  className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
+              <span className="text-sm text-gray-500">Total ({qty} unit × {days} hari):</span>
               <span className="font-semibold text-[#124756]">Rp {total.toLocaleString('id-ID')}</span>
             </div>
           </div>
