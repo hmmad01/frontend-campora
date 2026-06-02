@@ -85,7 +85,7 @@ export default function PaketManagement() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#2F855A]" size={40} /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#124756]" size={40} /></div>;
   if (error) return <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl"><AlertCircle size={20} /><span>{error}</span></div>;
 
   return (
@@ -96,7 +96,7 @@ export default function PaketManagement() {
           <h3 className="text-xl font-semibold text-gray-900">Kelola Paket</h3>
           <p className="text-sm text-gray-400 mt-0.5">Kelola paket bundling sewa peralatan</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-[#2F855A] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#276749] transition-colors">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-[#124756] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#0e3a47] transition-colors">
           <Plus size={18} /> Tambah Paket
         </button>
       </div>
@@ -114,20 +114,20 @@ export default function PaketManagement() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Nama Paket</label>
-                  <input value={formData.nama_paket} onChange={(e) => setFormData({ ...formData, nama_paket: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="Nama paket..." />
+                  <input value={formData.nama_paket} onChange={(e) => setFormData({ ...formData, nama_paket: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm" placeholder="Nama paket..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Harga (Rp / hari)</label>
-                  <input type="number" value={formData.harga} onChange={(e) => setFormData({ ...formData, harga: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="150000" />
+                  <input type="number" value={formData.harga} onChange={(e) => setFormData({ ...formData, harga: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm" placeholder="150000" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
-                <input value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="Deskripsi singkat paket..." />
+                <input value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm" placeholder="Deskripsi singkat paket..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Isi Paket (satu item per baris)</label>
-                <textarea value={formData.items} onChange={(e) => setFormData({ ...formData, items: e.target.value })} rows={5} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm resize-none font-mono" placeholder={"1x Tenda Kapasitas 2 Orang\n2x Sleeping Bag Polar\n1x Lampu Tenda"} />
+                <textarea value={formData.items} onChange={(e) => setFormData({ ...formData, items: e.target.value })} rows={5} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm resize-none font-mono" placeholder={"1x Tenda Kapasitas 2 Orang\n2x Sleeping Bag Polar\n1x Lampu Tenda"} />
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="rounded" />
@@ -139,7 +139,7 @@ export default function PaketManagement() {
                 <button onClick={resetForm} disabled={saving} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-60">
                   Batal
                 </button>
-                <button onClick={handleSubmit} disabled={saving} className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                <button onClick={handleSubmit} disabled={saving} className="flex-1 px-4 py-3 bg-[#124756] text-white rounded-xl font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
                   {saving && <Loader2 size={18} className="animate-spin" />}
                   {saving ? "Menyimpan..." : (editingId ? "Simpan Perubahan" : "Simpan")}
                 </button>
@@ -172,7 +172,7 @@ export default function PaketManagement() {
                       <span key={i} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{item}</span>
                     ))}
                   </div>
-                  <p className="text-sm font-semibold text-[#2F855A]">Rp {Number(p.harga).toLocaleString("id-ID")} / hari</p>
+                  <p className="text-sm font-semibold text-[#124756]">Rp {Number(p.harga).toLocaleString("id-ID")} / hari</p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   <button onClick={() => handleEdit(p)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><Pencil size={16} className="text-gray-400" /></button>

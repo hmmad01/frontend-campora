@@ -153,7 +153,7 @@ export default function ReviewManagement() {
   const approvedCount = reviews.filter((r) => r.is_approved).length;
   const pendingCount = reviews.filter((r) => !r.is_approved).length;
 
-  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#2F855A]" size={40} /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#124756]" size={40} /></div>;
   if (error) return <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl"><AlertCircle size={20} /><span>{error}</span></div>;
 
   return (
@@ -167,7 +167,7 @@ export default function ReviewManagement() {
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
-          className="flex items-center gap-2 bg-[#2F855A] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#276749] transition-colors"
+          className="flex items-center gap-2 bg-[#124756] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#0e3a47] transition-colors"
         >
           <Plus size={18} /> Tambah Review
         </button>
@@ -224,7 +224,7 @@ export default function ReviewManagement() {
                   <input
                     value={formData.nama_customer}
                     onChange={(e) => setFormData({ ...formData, nama_customer: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm"
                     placeholder="Nama pelanggan..."
                   />
                 </div>
@@ -245,7 +245,7 @@ export default function ReviewManagement() {
                   <select
                     value={formData.produk_disewa}
                     onChange={(e) => setFormData({ ...formData, produk_disewa: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm"
                   >
                     <option value="">Pilih produk...</option>
                     {products.map((p) => (
@@ -260,7 +260,7 @@ export default function ReviewManagement() {
                   <input
                     value={formData.kegiatan}
                     onChange={(e) => setFormData({ ...formData, kegiatan: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm"
                     placeholder="e.g. Camping di Bromo..."
                   />
                 </div>
@@ -271,7 +271,7 @@ export default function ReviewManagement() {
                   value={formData.isi_review}
                   onChange={(e) => setFormData({ ...formData, isi_review: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm resize-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm resize-none"
                   placeholder="Isi ulasan pelanggan..."
                 />
               </div>
@@ -355,7 +355,7 @@ export default function ReviewManagement() {
                 <button
                   onClick={handleSubmit}
                   disabled={saving}
-                  className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="flex-1 px-4 py-3 bg-[#124756] text-white rounded-xl font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {saving && <Loader2 size={18} className="animate-spin" />}
                   {saving ? "Menyimpan..." : (editingId ? "Simpan Perubahan" : "Simpan")}

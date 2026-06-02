@@ -93,9 +93,9 @@ export default function FAQPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-6 md:px-10 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-          <div className="lg:col-span-2 flex flex-col gap-5">
+          <div className="lg:col-span-3 flex flex-col gap-5">
 
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex gap-8">
@@ -144,8 +144,8 @@ export default function FAQPage() {
             )}
           </div>
 
-          <div className="hidden lg:block">
-            <div className="rounded-3xl overflow-hidden shadow-md h-full min-h-[420px] sticky top-6">
+          <div className="hidden lg:block lg:col-span-2">
+            <div className="rounded-3xl overflow-hidden shadow-md top-6 h-[530px] w-[500px]">
               <img src={imgCamping} alt="Camping Adventure" className="w-full h-full object-cover" />
             </div>
           </div>
