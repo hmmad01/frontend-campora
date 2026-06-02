@@ -44,7 +44,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="animate-spin text-[#2F855A]" size={40} />
+        <Loader2 className="animate-spin text-[#124756]" size={40} />
       </div>
     );
   }

@@ -27,14 +27,14 @@ const ProductFormField = ({ label, ...props }: ProductFormFieldProps) => (
     {props.type === "textarea" ? (
       <textarea
         {...props}
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent resize-none"
+        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent resize-none"
       />
     ) : props.type === "select" ? (
-      <select {...props} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent">
+      <select {...props} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent">
         {props.children}
       </select>
     ) : (
-      <input {...props} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent" />
+      <input {...props} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent" />
     )}
   </div>
 );
@@ -191,7 +191,7 @@ export default function ProductManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="animate-spin text-[#2F855A]" size={40} />
+        <Loader2 className="animate-spin text-[#124756]" size={40} />
       </div>
     );
   }
@@ -205,7 +205,7 @@ export default function ProductManagement() {
         </div>
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2 bg-[#2F855A] text-white rounded-xl hover:bg-[#276749] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#124756] text-white rounded-xl hover:bg-[#0e3a47] transition-colors"
         >
           <RefreshCw size={16} />
           Coba Lagi
@@ -230,13 +230,13 @@ export default function ProductManagement() {
               placeholder="Cari barang..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm w-64"
+              className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm w-64"
             />
           </div>
           <button onClick={fetchData} className="flex items-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors">
             <RefreshCw size={18} />
           </button>
-          <button onClick={handleAdd} className="flex items-center gap-2 px-6 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors shadow-sm">
+          <button onClick={handleAdd} className="flex items-center gap-2 px-6 py-3 bg-[#124756] text-white rounded-xl font-medium hover:bg-[#0e3a47] transition-colors shadow-sm">
             <Plus size={20} />
             Tambah Barang
           </button>
@@ -360,7 +360,7 @@ export default function ProductManagement() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Upload Gambar</label>
                 <div
-                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#2F855A] transition-colors cursor-pointer"
+                  className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-[#124756] transition-colors cursor-pointer"
                   onClick={() => document.getElementById("foto-input")?.click()}
                 >
                   <Upload className="mx-auto text-gray-400 mb-2" size={32} />
@@ -408,7 +408,7 @@ export default function ProductManagement() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="flex-1 px-4 py-3 bg-[#124756] text-white rounded-xl font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {submitting && <Loader2 size={18} className="animate-spin" />}
                   {submitting ? "Menyimpan..." : "Simpan"}

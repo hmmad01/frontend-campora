@@ -8,7 +8,7 @@ import imgLogo from '@/images/logo campora.png';
 const sidebarNavLinkClass = ({ isActive }: { isActive: boolean }): string =>
   `flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
     isActive
-      ? "bg-[#2F855A] text-white"
+      ? "bg-[#124756] text-white"
       : "text-gray-300 hover:bg-gray-800"
   }`;
 
@@ -106,7 +106,7 @@ export default function AdminLayout() {
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-xl">
-              <div className="w-8 h-8 bg-[#2F855A] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-[#124756] rounded-full flex items-center justify-center">
                 <User size={18} className="text-white" />
               </div>
               <div className="text-sm">

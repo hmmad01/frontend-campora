@@ -72,7 +72,7 @@ export default function FAQManagement() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#2F855A]" size={40} /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><Loader2 className="animate-spin text-[#124756]" size={40} /></div>;
   if (error) return <div className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl"><AlertCircle size={20} /><span>{error}</span></div>;
 
   return (
@@ -83,7 +83,7 @@ export default function FAQManagement() {
           <h3 className="text-xl font-semibold text-gray-900">Kelola FAQ</h3>
           <p className="text-sm text-gray-400 mt-0.5">Kelola pertanyaan yang sering diajukan</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-[#2F855A] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#276749] transition-colors">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="flex items-center gap-2 bg-[#124756] text-white px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-[#0e3a47] transition-colors">
           <Plus size={18} /> Tambah FAQ
         </button>
       </div>
@@ -100,17 +100,17 @@ export default function FAQManagement() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Pertanyaan</label>
-                <input value={formData.pertanyaan} onChange={(e) => setFormData({ ...formData, pertanyaan: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="Masukkan pertanyaan..." />
+                <input value={formData.pertanyaan} onChange={(e) => setFormData({ ...formData, pertanyaan: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm" placeholder="Masukkan pertanyaan..." />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Jawaban</label>
-                <textarea value={formData.jawaban} onChange={(e) => setFormData({ ...formData, jawaban: e.target.value })} rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm resize-none" placeholder="Masukkan jawaban..." />
+                <textarea value={formData.jawaban} onChange={(e) => setFormData({ ...formData, jawaban: e.target.value })} rows={4} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#124756] focus:border-transparent text-sm resize-none" placeholder="Masukkan jawaban..." />
               </div>
               <div className="flex gap-3 pt-4">
                 <button onClick={resetForm} disabled={saving} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-60">
                   Batal
                 </button>
-                <button onClick={handleSubmit} disabled={saving} className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                <button onClick={handleSubmit} disabled={saving} className="flex-1 px-4 py-3 bg-[#124756] text-white rounded-xl font-medium hover:bg-[#0e3a47] transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
                   {saving && <Loader2 size={18} className="animate-spin" />}
                   {saving ? "Menyimpan..." : (editingId ? "Simpan Perubahan" : "Simpan")}
                 </button>

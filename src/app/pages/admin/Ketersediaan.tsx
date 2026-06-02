@@ -100,7 +100,7 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
                 type="date"
                 value={mulai}
                 onChange={e => setMulai(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#124756]"
               />
             </div>
             <div>
@@ -110,7 +110,7 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
                 value={selesai}
                 min={mulai}
                 onChange={e => setSelesai(e.target.value)}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
+                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#124756]"
               />
             </div>
           </div>
@@ -125,7 +125,7 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
               max={product.stok_total}
               value={stok}
               onChange={e => setStok(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#124756]"
             />
             <p className="text-xs text-gray-400 mt-1">
               Stok tersisa di katalog: {Math.max(0, product.stok_total - stok)}
@@ -139,7 +139,7 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
               value={catatan}
               onChange={e => setCatatan(e.target.value)}
               placeholder="e.g. Booking atas nama Budi"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#124756]"
             />
           </div>
 
@@ -156,7 +156,7 @@ function BookingFormModal({ product, editing, prefillStart, onClose, onSaved }: 
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex items-center gap-2 bg-[#2F855A] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#276749] disabled:opacity-50"
+              className="flex items-center gap-2 bg-[#124756] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#0e3a47] disabled:opacity-50"
             >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {editing ? "Simpan Perubahan" : "Tambah Booking"}
@@ -274,7 +274,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
           </div>
           <button
             onClick={() => { setClickedDate(todayStr); setEditingBooking(null); setShowForm(true); }}
-            className="flex items-center gap-1.5 bg-[#2F855A] text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-[#276749] transition-colors"
+            className="flex items-center gap-1.5 bg-[#124756] text-white px-3 py-2 rounded-lg text-xs font-medium hover:bg-[#0e3a47] transition-colors"
           >
             <Plus size={14} /> Tambah Booking
           </button>
@@ -289,7 +289,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
             <select
               value={m}
               onChange={(e) => setMonth(new Date(y, Number(e.target.value), 1))}
-              className="px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-800 bg-white focus:outline-none focus:border-[#2F855A] font-semibold"
+              className="px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-800 bg-white focus:outline-none focus:border-[#124756] font-semibold"
             >
               {MONTHS.map((monthName, idx) => (
                 <option key={monthName} value={idx}>{monthName}</option>
@@ -299,7 +299,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
               type="number"
               value={y}
               onChange={(e) => setMonth(new Date(Number(e.target.value), m, 1))}
-              className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-800 bg-white focus:outline-none focus:border-[#2F855A] font-semibold"
+              className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-gray-800 bg-white focus:outline-none focus:border-[#124756] font-semibold"
             />
           </div>
           <button onClick={() => setMonth(new Date(y, m + 1))} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition-colors">
@@ -316,7 +316,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
 
         {loading ? (
           <div className="flex items-center justify-center py-10">
-            <Loader2 size={28} className="animate-spin text-[#2F855A]" />
+            <Loader2 size={28} className="animate-spin text-[#124756]" />
           </div>
         ) : (
           <div className="grid grid-cols-7 gap-1.5 px-6 pb-4">
@@ -341,7 +341,7 @@ function ProductCalendarItem({ product, onDataChange }: { product: Barang; onDat
               }
 
               if (isToday) {
-                cellClass += " ring-2 ring-offset-1 ring-[#2F855A]";
+                cellClass += " ring-2 ring-offset-1 ring-[#124756]";
               }
 
               return (
@@ -470,7 +470,7 @@ export default function AvailabilityCalendar() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="animate-spin text-[#2F855A]" size={40} />
+        <Loader2 className="animate-spin text-[#124756]" size={40} />
       </div>
     );
   }
@@ -501,7 +501,7 @@ export default function AvailabilityCalendar() {
     if (loadingBookings) {
       return (
         <div className="bg-white border border-gray-200 rounded-2xl h-64 flex items-center justify-center">
-          <Loader2 className="animate-spin text-[#2F855A]" size={32} />
+          <Loader2 className="animate-spin text-[#124756]" size={32} />
         </div>
       );
     }
@@ -531,7 +531,7 @@ export default function AvailabilityCalendar() {
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <CalendarDays size={18} className="text-[#2F855A]" />
+            <CalendarDays size={18} className="text-[#124756]" />
             Daftar Booking Aktif & Mendatang
           </h4>
         </div>
@@ -554,7 +554,7 @@ export default function AvailabilityCalendar() {
                   onClick={() => setSelectedProductId(b.id_barang)}
                   title="Klik untuk melihat kalender barang ini"
                 >
-                  <td className="px-4 py-3 font-medium text-[#2F855A]">{b.barang?.nama_barang || `ID: ${b.id_barang}`}</td>
+                  <td className="px-4 py-3 font-medium text-[#124756]">{b.barang?.nama_barang || `ID: ${b.id_barang}`}</td>
                   <td className="px-4 py-3 text-gray-600">{formatDate(b.tanggal_mulai)}</td>
                   <td className="px-4 py-3 text-gray-600">{formatDate(b.tanggal_selesai)}</td>
                   <td className="px-4 py-3 text-gray-900 font-medium">{b.stok_disewa} unit</td>
@@ -599,13 +599,13 @@ export default function AvailabilityCalendar() {
               placeholder="Cari nama barang..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#2F855A]"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#124756]"
             />
           </div>
           <select
             value={selectedProductId}
             onChange={e => setSelectedProductId(Number(e.target.value))}
-            className="w-full sm:flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#2F855A]"
+            className="w-full sm:flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 bg-white focus:outline-none focus:border-[#124756]"
           >
             <option value={0}>— Pilih barang —</option>
             {products
