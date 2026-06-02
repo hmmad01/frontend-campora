@@ -1,8 +1,3 @@
-/**
- * @file Toast.tsx
- * @description Komponen notifikasi toast ringan untuk menampilkan pesan sukses/error
- *              di halaman admin. Auto-dismiss setelah beberapa detik.
- */
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle, X } from "lucide-react";
@@ -15,16 +10,12 @@ export interface ToastMessage {
 
 let toastIdCounter = 0;
 
-/**
- * Custom hook untuk mengelola daftar toast.
- */
 export function useToast() {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (type: "success" | "error", text: string) => {
     const id = ++toastIdCounter;
     setToasts((prev) => [...prev, { id, type, text }]);
-    // Auto remove after 4 seconds
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4000);
@@ -40,9 +31,6 @@ export function useToast() {
   return { toasts, success, error, removeToast };
 }
 
-/**
- * Komponen container untuk menampilkan toast di pojok kanan atas.
- */
 export function ToastContainer({ toasts, onRemove }: { toasts: ToastMessage[]; onRemove: (id: number) => void }) {
   if (toasts.length === 0) return null;
 
@@ -59,7 +47,6 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: (id: nu
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    // Trigger enter animation
     requestAnimationFrame(() => setShow(true));
   }, []);
 

@@ -1,13 +1,8 @@
-/**
- * @file ProductCard.tsx
- * @description Komponen kartu produk (ProductCard) untuk menampilkan gambar, nama, kategori, harga sewa per hari, rating, dan brand/aksi sewa produk. Mendukung variasi grid dan horizontal scroll.
- */
 
 import { Link } from 'react-router';
 import { Star } from 'lucide-react';
 import type { Product } from '../types';
 
-// Category badge colors — works with both static and API-sourced categories
 const CATEGORY_COLORS: Record<string, string> = {
   Tenda: 'bg-emerald-100 text-emerald-700',
   Carrier: 'bg-blue-100 text-blue-700',

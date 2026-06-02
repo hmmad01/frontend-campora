@@ -1,8 +1,3 @@
-/**
- * @file ProductManagement.tsx
- * @description Halaman admin untuk mengelola (menambah, mengubah, menghapus) data barang rental CAMPORA.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, X, Upload, Loader2, AlertCircle, RefreshCw, Search } from "lucide-react";
@@ -85,7 +80,6 @@ export default function ProductManagement() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const toast = useToast();
 
-  // Fetch products and categories
   const fetchData = async () => {
     setLoading(true);
     setError("");
@@ -163,7 +157,6 @@ export default function ProductManagement() {
           stok_total: Number(formData.stok_total),
         } as any);
 
-        // Upload foto jika ada
         if (selectedFile) {
           await fotoApi.upload(editingProduct.id_barang, selectedFile);
         }
@@ -177,7 +170,6 @@ export default function ProductManagement() {
           spesifikasi: formData.spesifikasi || undefined,
         });
 
-        // Upload foto jika ada
         if (selectedFile && res.data?.id_barang) {
           await fotoApi.upload(res.data.id_barang, selectedFile);
         }

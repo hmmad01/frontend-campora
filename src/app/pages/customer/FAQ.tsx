@@ -1,8 +1,3 @@
-/**
- * @file FAQPage.tsx
- * @description Halaman FAQ (Frequently Asked Questions) yang menampilkan accordion daftar pertanyaan dan jawaban seputar penyewaan alat outdoor.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState, useEffect } from 'react';
 import { ChevronDown, Mail, MessageCircle, Loader2 } from 'lucide-react';

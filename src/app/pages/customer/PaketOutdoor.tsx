@@ -1,8 +1,3 @@
-/**
- * @file PaketPage.tsx
- * @description Halaman penawaran paket sewa hemat (bundling) peralatan outdoor untuk berbagai level pendakian atau camping keluarga.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState, useEffect } from 'react';
 import { Check, ArrowRight, Loader2 } from 'lucide-react';
@@ -13,7 +8,6 @@ import imgBasic from '@/images/paket basic camp.png';
 import imgFamily from '@/images/paket family .png';
 import imgHiking from '@/images/paket hiking.png';
 
-// Fallback images mapped by partial name match
 const FALLBACK_IMAGES: Record<string, string> = {
   basic: imgBasic,
   family: imgFamily,
@@ -24,7 +18,6 @@ function getImage(paket: PaketItem): string {
   if (paket.gambar) {
     return paket.gambar.startsWith('/') ? `http://localhost:8000${paket.gambar}` : paket.gambar;
   }
-  // Try to match fallback by name
   const lower = paket.nama_paket.toLowerCase();
   for (const [key, img] of Object.entries(FALLBACK_IMAGES)) {
     if (lower.includes(key)) return img;

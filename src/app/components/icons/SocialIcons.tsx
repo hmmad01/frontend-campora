@@ -1,14 +1,8 @@
-/**
- * @file SocialIcons.tsx
- * @description Komponen ikon SVG sosial media/kontak (WhatsApp, Instagram, Mail) yang reusable dan menerima prop className.
- */
 
 interface IconProps {
-  /** Tailwind or custom class for sizing/colour. Defaults to "w-5 h-5". */
   className?: string;
 }
 
-// ── WhatsApp ──────────────────────────────────────────────────────────────────
 export function WhatsAppIcon({ className = 'w-5 h-5' }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -17,7 +11,6 @@ export function WhatsAppIcon({ className = 'w-5 h-5' }: IconProps) {
   );
 }
 
-// ── Instagram ─────────────────────────────────────────────────────────────────
 export function InstagramIcon({ className = 'w-5 h-5' }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -26,7 +19,6 @@ export function InstagramIcon({ className = 'w-5 h-5' }: IconProps) {
   );
 }
 
-// ── Mail ──────────────────────────────────────────────────────────────────────
 export function MailIcon({ className = 'w-5 h-5' }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

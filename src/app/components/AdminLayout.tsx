@@ -1,8 +1,3 @@
-/**
- * @file AdminLayout.tsx
- * @description Komponen layout untuk panel administrator (Dashboard). Menyediakan sidebar navigasi, topbar profil, dan area konten utama yang dinamis.
- *              Mengecek session admin dari sessionStorage dan redirect ke login jika belum login.
- */
 
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router";
 import { LayoutDashboard, Package, Calendar, LogOut, User, HelpCircle, MessageSquare, PackageOpen } from "lucide-react";

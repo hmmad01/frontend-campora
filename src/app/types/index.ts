@@ -1,7 +1,3 @@
-/**
- * @file index.ts (types)
- * @description Definisi tipe data global (shared interfaces) yang digunakan di seluruh aplikasi (seperti Product, Review, Package, dll).
- */
 
 export interface Product {
   id: string;

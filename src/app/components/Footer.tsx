@@ -1,14 +1,9 @@
-/**
- * @file Footer.tsx
- * @description Komponen footer global aplikasi CAMPORA. Berisi informasi kontak, link navigasi layanan & bantuan, serta link sosial media.
- */
 
 import { Link } from 'react-router';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import imgFooterLogo from '@/images/logo campora.png';
 import { WhatsAppIcon, InstagramIcon, MailIcon } from './icons/SocialIcons';
 
-// ── Data navigasi footer dengan path yang sesuai routes ──────────────────────
 
 const LAYANAN: { label: string; to: string }[] = [
   { label: 'Rental Peralatan', to: '/katalog' },
@@ -29,7 +24,6 @@ const LEGAL_LINKS: { label: string; to: string }[] = [
   { label: 'Cookie Policy', to: '/faq' },
 ];
 
-// ── Kontak & Sosial Media ────────────────────────────────────────────────────
 
 const WA_LINK =
   'https://wa.me/6285736292760?text=' +
@@ -38,7 +32,6 @@ const IG_LINK = 'https://instagram.com/campora.id';
 const EMAIL = 'camporaid@email.com';
 const PHONE = '085736292760';
 
-// ── Sub-komponen ─────────────────────────────────────────────────────────────
 
 function SocialButton({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
   return (
@@ -71,7 +64,6 @@ function FooterLinkList({ heading, items }: { heading: string; items: { label: s
   );
 }
 
-// ── Komponen Utama ───────────────────────────────────────────────────────────
 
 export function Footer() {
   return (

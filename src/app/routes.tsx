@@ -1,7 +1,3 @@
-/**
- * @file routes.tsx
- * @description Konfigurasi rute (routing) aplikasi menggunakan react-router. Mendefinisikan layout umum untuk customer dan admin beserta rute halaman masing-masing.
- */
 
 import { createBrowserRouter, Outlet } from 'react-router';
 import { Navbar } from './components/Navbar';

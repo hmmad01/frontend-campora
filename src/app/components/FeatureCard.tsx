@@ -1,7 +1,3 @@
-/**
- * @file FeatureCard.tsx
- * @description Komponen kartu informasi untuk menampilkan fitur utama (pada HomePage) atau statistik pencapaian (pada TentangPage).
- */
 
 import type { ReactNode } from 'react';
 

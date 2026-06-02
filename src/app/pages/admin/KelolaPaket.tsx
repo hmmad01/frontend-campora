@@ -1,8 +1,3 @@
-/**
- * @file PaketManagement.tsx
- * @description Halaman admin untuk mengelola paket bundling sewa peralatan outdoor.
- *              CRUD lengkap terhubung ke backend Laravel via API.
- */
 
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Loader2, AlertCircle, X, Save, PackageOpen, Star as StarIcon } from "lucide-react";

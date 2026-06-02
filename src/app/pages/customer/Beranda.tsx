@@ -1,8 +1,3 @@
-/**
- * @file HomePage.tsx
- * @description Halaman utama (Home) aplikasi CAMPORA yang menyajikan hero banner, kategori produk, produk terpopuler, alasan memilih CAMPORA, alur pemesanan (cara sewa), dan testimoni pelanggan.
- *              Produk populer dimuat dari backend API.
- */
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
@@ -391,13 +386,11 @@ export default function HomePage() {
           testimoniApi.getAll()
         ]);
 
-        // Build availability map
         const availMap: Record<number, boolean> = {};
         for (const a of todayAvailRes) {
           availMap[a.id_barang] = a.tersedia;
         }
 
-        // Build a map: produk_disewa -> { totalRating, count }
         const ratingMap: Record<string, { total: number; count: number }> = {};
         for (const t of testimoniRes.data) {
           if (!t.produk_disewa) continue;
@@ -407,7 +400,6 @@ export default function HomePage() {
           ratingMap[key].count += 1;
         }
 
-        // Filter out items with no stock today, then take first 5
         const available = res.data
           .filter((b) => {
             if (b.id_barang in availMap) return availMap[b.id_barang];

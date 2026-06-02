@@ -1,8 +1,3 @@
-/**
- * @file Login.tsx
- * @description Halaman login administrator untuk mengamankan akses ke dashboard manajemen produk dan ketersediaan barang CAMPORA.
- *              Terkoneksi ke backend Laravel via API.
- */
 
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -30,7 +25,6 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await authApi.login(username, password);
-      // Simpan data admin ke sessionStorage
       sessionStorage.setItem("admin", JSON.stringify(res.data));
       navigate("/dashboard");
     } catch (err: any) {

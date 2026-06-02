@@ -1,7 +1,3 @@
-/**
- * @file SectionHeader.tsx
- * @description Komponen header bagian (SectionHeader) yang reusable. Menampilkan badge kategori, judul utama, dan sub-judul.
- */
 
 interface Props {
   badge?: string;
