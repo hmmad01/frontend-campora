@@ -273,7 +273,7 @@ export default function ProductManagement() {
                     <div className="flex items-center gap-3">
                       {product.fotos && product.fotos.length > 0 && (
                         <img
-                          src={product.fotos[0].url_foto}
+                          src={product.fotos[0].url_foto.startsWith('/') ? `http://localhost:8000${product.fotos[0].url_foto}` : product.fotos[0].url_foto}
                           alt={product.nama_barang}
                           className="w-10 h-10 rounded-lg object-cover"
                         />
@@ -298,7 +298,7 @@ export default function ProductManagement() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h3 className="text-xl font-bold text-gray-900">{editingProduct ? "Edit Barang" : "Tambah Barang"}</h3>
               <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -307,43 +307,48 @@ export default function ProductManagement() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <ProductFormField
-                label="Nama Barang"
-                type="text"
-                value={formData.nama_barang}
-                onChange={(e) => setFormData({ ...formData, nama_barang: e.target.value })}
-                placeholder="Masukkan nama barang"
-                required
-              />
-              <ProductFormField label="Kategori" type="select" value={formData.id_kategori} onChange={(e) => setFormData({ ...formData, id_kategori: e.target.value })} required>
-                <option value="">Pilih kategori</option>
-                {kategoris.map((k) => (
-                  <option key={k.id_kategori} value={k.id_kategori}>{k.nama_kategori}</option>
-                ))}
-              </ProductFormField>
-              <ProductFormField
-                label="Harga per Hari (Rp)"
-                type="number"
-                value={formData.harga_per_hari}
-                onChange={(e) => setFormData({ ...formData, harga_per_hari: e.target.value })}
-                placeholder="100000"
-                required
-              />
-              <ProductFormField
-                label="Stok Total"
-                type="number"
-                value={formData.stok_total}
-                onChange={(e) => setFormData({ ...formData, stok_total: e.target.value })}
-                placeholder="10"
-                required
-              />
-              <ProductFormField
-                label="Merk"
-                type="text"
-                value={formData.merk}
-                onChange={(e) => setFormData({ ...formData, merk: e.target.value })}
-                placeholder="Contoh: Eiger, Consina"
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <ProductFormField
+                  label="Nama Barang"
+                  type="text"
+                  value={formData.nama_barang}
+                  onChange={(e) => setFormData({ ...formData, nama_barang: e.target.value })}
+                  placeholder="Masukkan nama barang"
+                  required
+                />
+                <ProductFormField label="Kategori" type="select" value={formData.id_kategori} onChange={(e) => setFormData({ ...formData, id_kategori: e.target.value })} required>
+                  <option value="">Pilih kategori</option>
+                  {kategoris.map((k) => (
+                    <option key={k.id_kategori} value={k.id_kategori}>{k.nama_kategori}</option>
+                  ))}
+                </ProductFormField>
+                <ProductFormField
+                  label="Harga per Hari (Rp)"
+                  type="number"
+                  value={formData.harga_per_hari}
+                  onChange={(e) => setFormData({ ...formData, harga_per_hari: e.target.value })}
+                  placeholder="100000"
+                  required
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <ProductFormField
+                    label="Stok Total"
+                    type="number"
+                    value={formData.stok_total}
+                    onChange={(e) => setFormData({ ...formData, stok_total: e.target.value })}
+                    placeholder="10"
+                    required
+                  />
+                  <ProductFormField
+                    label="Merk"
+                    type="text"
+                    value={formData.merk}
+                    onChange={(e) => setFormData({ ...formData, merk: e.target.value })}
+                    placeholder="Contoh: Eiger"
+                  />
+                </div>
+              </div>
+
               <ProductFormField
                 label="Spesifikasi"
                 type="textarea"

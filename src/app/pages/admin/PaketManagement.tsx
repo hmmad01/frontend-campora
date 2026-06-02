@@ -107,42 +107,48 @@ export default function PaketManagement() {
       </div>
 
       {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-base font-semibold text-gray-800">{editingId ? "Edit Paket" : "Tambah Paket Baru"}</h4>
-            <button onClick={resetForm} className="p-1.5 hover:bg-gray-100 rounded-lg"><X size={18} className="text-gray-400" /></button>
-          </div>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">NAMA PAKET</label>
-                <input value={formData.nama_paket} onChange={(e) => setFormData({ ...formData, nama_paket: e.target.value })} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]" placeholder="Nama paket..." />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">HARGA (Rp / hari)</label>
-                <input type="number" value={formData.harga} onChange={(e) => setFormData({ ...formData, harga: e.target.value })} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]" placeholder="150000" />
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">DESKRIPSI</label>
-              <input value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]" placeholder="Deskripsi singkat paket..." />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">ISI PAKET (satu item per baris)</label>
-              <textarea value={formData.items} onChange={(e) => setFormData({ ...formData, items: e.target.value })} rows={5} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A] resize-none font-mono" placeholder={"1x Tenda Kapasitas 2 Orang\n2x Sleeping Bag Polar\n1x Lampu Tenda"} />
-            </div>
-            <div className="flex items-center gap-2">
-              <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="rounded" />
-              <label htmlFor="is_featured" className="text-sm text-gray-700 flex items-center gap-1">
-                <StarIcon size={14} className="text-yellow-400" /> Tandai sebagai Terpopuler
-              </label>
-            </div>
-            <div className="flex gap-2 justify-end">
-              <button onClick={resetForm} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">Batal</button>
-              <button onClick={handleSubmit} disabled={saving} className="flex items-center gap-2 bg-[#2F855A] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#276749] disabled:opacity-50">
-                {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                {editingId ? "Simpan Perubahan" : "Tambah Paket"}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-bold text-gray-900">{editingId ? "Edit Paket" : "Tambah Paket Baru"}</h3>
+              <button onClick={resetForm} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X size={24} />
               </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nama Paket</label>
+                  <input value={formData.nama_paket} onChange={(e) => setFormData({ ...formData, nama_paket: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="Nama paket..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Harga (Rp / hari)</label>
+                  <input type="number" value={formData.harga} onChange={(e) => setFormData({ ...formData, harga: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="150000" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                <input value={formData.deskripsi} onChange={(e) => setFormData({ ...formData, deskripsi: e.target.value })} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm" placeholder="Deskripsi singkat paket..." />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Isi Paket (satu item per baris)</label>
+                <textarea value={formData.items} onChange={(e) => setFormData({ ...formData, items: e.target.value })} rows={5} className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm resize-none font-mono" placeholder={"1x Tenda Kapasitas 2 Orang\n2x Sleeping Bag Polar\n1x Lampu Tenda"} />
+              </div>
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} className="rounded" />
+                <label htmlFor="is_featured" className="text-sm text-gray-700 flex items-center gap-1">
+                  <StarIcon size={16} className="text-yellow-500" /> Tandai sebagai Terpopuler
+                </label>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button onClick={resetForm} disabled={saving} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-60">
+                  Batal
+                </button>
+                <button onClick={handleSubmit} disabled={saving} className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60">
+                  {saving && <Loader2 size={18} className="animate-spin" />}
+                  {saving ? "Menyimpan..." : (editingId ? "Simpan Perubahan" : "Simpan")}
+                </button>
+              </div>
             </div>
           </div>
         </div>

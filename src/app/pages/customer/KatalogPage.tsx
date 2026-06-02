@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router';
 import { Search, Filter, ChevronDown, Loader2, PackageX } from 'lucide-react';
 import { ProductCard } from '../../components/ProductCard';
 import { barangApi, kategoriApi, testimoniApi, ketersediaanApi, toProduct, type Kategori } from '../../api';
@@ -13,12 +14,31 @@ import type { Product } from '../../types';
 const SORT_OPTIONS = ['Terpopuler', 'Harga Terendah', 'Harga Tertinggi', 'Rating Tertinggi'];
 
 export default function KatalogPage() {
+  const [searchParams] = useSearchParams();
+  const queryKategori = searchParams.get('kategori');
+
+  const getInitialCategory = () => {
+    if (!queryKategori) return 'Semua Kategori';
+    const lower = queryKategori.toLowerCase();
+    if (lower === 'tenda') return 'Tenda';
+    if (lower === 'carrier') return 'Carrier';
+    if (lower === 'sleeping-bag') return 'Sleeping Bag';
+    if (lower === 'perlengkapan') return 'Perlengkapan';
+    return 'Semua Kategori';
+  };
+
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('Semua Kategori');
+  const [category, setCategory] = useState(getInitialCategory());
   const [sort, setSort] = useState('Terpopuler');
   const [products, setProducts] = useState<Product[]>([]);
   const [kategoris, setKategoris] = useState<Kategori[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (queryKategori) {
+      setCategory(getInitialCategory());
+    }
+  }, [queryKategori]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,7 +95,13 @@ export default function KatalogPage() {
   }, []);
 
 
-  const filterCategories = ['Semua Kategori', ...kategoris.map((k) => k.nama_kategori)];
+  const ALLOWED_CATEGORIES = ['Carrier', 'Tenda', 'Sleeping Bag', 'Perlengkapan'];
+  const filterCategories = [
+    'Semua Kategori',
+    ...kategoris
+      .map((k) => k.nama_kategori)
+      .filter((nama) => ALLOWED_CATEGORIES.includes(nama)),
+  ];
 
   const filtered: Product[] = products
     .filter((p) => {

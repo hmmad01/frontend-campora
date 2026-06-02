@@ -43,7 +43,7 @@ function PackageCard({ paket }: PackageCardProps) {
 
   return (
     <article
-      className={`bg-white rounded-3xl shadow-md overflow-hidden flex flex-col ${paket.is_featured ? 'ring-2 ring-[#219653] shadow-xl' : 'border border-gray-100'
+      className={`bg-white rounded-3xl shadow-md overflow-hidden flex flex-col h-full ${paket.is_featured ? 'ring-2 ring-[#219653] shadow-xl' : 'border border-gray-100'
         }`}
     >
       <div className="relative h-52 overflow-hidden">
@@ -137,7 +137,7 @@ export default function PaketPage() {
             <p>Belum ada paket tersedia.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             {pakets.map((p) => (
               <PackageCard key={p.id_paket} paket={p} />
             ))}

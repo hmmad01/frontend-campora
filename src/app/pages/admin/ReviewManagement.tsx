@@ -12,13 +12,14 @@ import {
   Star, MessageSquare, CheckCircle, XCircle, Eye, EyeOff,
   Filter, ImagePlus, Trash
 } from "lucide-react";
-import { testimoniApi, type TestimoniItem } from "../../api";
+import { testimoniApi, barangApi, type TestimoniItem, type Barang } from "../../api";
 import { useToast, ToastContainer } from "../../components/Toast";
 
 type FilterType = "all" | "approved" | "pending";
 
 export default function ReviewManagement() {
   const [reviews, setReviews] = useState<TestimoniItem[]>([]);
+  const [products, setProducts] = useState<Barang[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -43,9 +44,13 @@ export default function ReviewManagement() {
 
   const fetchReviews = async () => {
     try {
-      const res = await testimoniApi.adminGetAll();
+      const [res, prodRes] = await Promise.all([
+        testimoniApi.adminGetAll(),
+        barangApi.getAll({ per_page: 100 })
+      ]);
       const sortedData = res.data.sort((a: TestimoniItem, b: TestimoniItem) => b.id_testimoni - a.id_testimoni);
       setReviews(sortedData);
+      setProducts(prodRes.data);
     } catch (err: any) {
       setError(err.message || "Gagal memuat data review");
     } finally {
@@ -94,7 +99,10 @@ export default function ReviewManagement() {
         });
         toast.success("Review berhasil diperbarui!");
       } else {
-        await testimoniApi.create(formData);
+        await testimoniApi.create({
+          ...formData,
+          foto: fotoFile,
+        });
         toast.success("Review berhasil ditambahkan!");
       }
       resetForm();
@@ -208,72 +216,78 @@ export default function ReviewManagement() {
 
       {/* Form */}
       {showForm && (
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="text-base font-semibold text-gray-800">
-              {editingId ? "Edit Review" : "Tambah Review Baru"}
-            </h4>
-            <button onClick={resetForm} className="p-1.5 hover:bg-gray-100 rounded-lg">
-              <X size={18} className="text-gray-400" />
-            </button>
-          </div>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">NAMA CUSTOMER</label>
-                <input
-                  value={formData.nama_customer}
-                  onChange={(e) => setFormData({ ...formData, nama_customer: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
-                  placeholder="Nama pelanggan..."
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">RATING</label>
-                <div className="flex items-center gap-1 mt-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <button key={i} type="button" onClick={() => setFormData({ ...formData, rating: i + 1 })}>
-                      <Star size={24} className={i < formData.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} />
-                    </button>
-                  ))}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h4 className="text-xl font-bold text-gray-900">
+                {editingId ? "Edit Review" : "Tambah Review Baru"}
+              </h4>
+              <button onClick={resetForm} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Nama Customer</label>
+                  <input
+                    value={formData.nama_customer}
+                    onChange={(e) => setFormData({ ...formData, nama_customer: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                    placeholder="Nama pelanggan..."
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                  <div className="flex items-center gap-1 mt-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <button key={i} type="button" onClick={() => setFormData({ ...formData, rating: i + 1 })}>
+                        <Star size={24} className={i < formData.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-200"} />
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">PRODUK YANG DISEWA</label>
-                <input
-                  value={formData.produk_disewa}
-                  onChange={(e) => setFormData({ ...formData, produk_disewa: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
-                  placeholder="e.g. Tenda 4 Orang..."
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Produk Yang Disewa</label>
+                  <select
+                    value={formData.produk_disewa}
+                    onChange={(e) => setFormData({ ...formData, produk_disewa: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                  >
+                    <option value="">Pilih produk...</option>
+                    {products.map((p) => (
+                      <option key={p.id_barang} value={p.nama_barang}>
+                        {p.nama_barang}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Kegiatan / Trip</label>
+                  <input
+                    value={formData.kegiatan}
+                    onChange={(e) => setFormData({ ...formData, kegiatan: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm"
+                    placeholder="e.g. Camping di Bromo..."
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5">KEGIATAN / TRIP</label>
-                <input
-                  value={formData.kegiatan}
-                  onChange={(e) => setFormData({ ...formData, kegiatan: e.target.value })}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A]"
-                  placeholder="e.g. Camping di Bromo..."
+                <label className="block text-sm font-medium text-gray-700 mb-2">Isi Review</label>
+                <textarea
+                  value={formData.isi_review}
+                  onChange={(e) => setFormData({ ...formData, isi_review: e.target.value })}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2F855A] focus:border-transparent text-sm resize-none"
+                  placeholder="Isi ulasan pelanggan..."
                 />
               </div>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">ISI REVIEW</label>
-              <textarea
-                value={formData.isi_review}
-                onChange={(e) => setFormData({ ...formData, isi_review: e.target.value })}
-                rows={3}
-                className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[#2F855A] resize-none"
-                placeholder="Isi ulasan pelanggan..."
-              />
-            </div>
 
-            {/* Foto Customer — shown when editing existing review */}
-            {editingId && (
+              {/* Foto Customer */}
               <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-2">FOTO CUSTOMER</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Foto Customer</label>
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center shrink-0">
                     {fotoPreview ? (
@@ -325,39 +339,39 @@ export default function ReviewManagement() {
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Approve toggle in form */}
-            <div className="flex items-center gap-3">
-              <label className="block text-xs font-semibold text-gray-500">TAMPILKAN DI FRONTEND</label>
-              <button
-                type="button"
-                onClick={() => setFormData({ ...formData, is_approved: !formData.is_approved })}
-                className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${formData.is_approved ? "bg-green-500" : "bg-gray-300"
-                  }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform mt-0.5 ${formData.is_approved ? "translate-x-4" : "translate-x-0.5"
+              {/* Approve toggle in form */}
+              <div className="flex items-center gap-3">
+                <label className="block text-sm font-medium text-gray-700">Tampilkan di Frontend</label>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_approved: !formData.is_approved })}
+                  className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${formData.is_approved ? "bg-green-500" : "bg-gray-300"
                     }`}
-                />
-              </button>
-              <span className={`text-xs font-medium ${formData.is_approved ? "text-green-600" : "text-gray-400"}`}>
-                {formData.is_approved ? "Akan tampil di halaman review" : "Tersembunyi (pending)"}
-              </span>
-            </div>
+                >
+                  <span
+                    className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform mt-0.5 ${formData.is_approved ? "translate-x-4" : "translate-x-0.5"
+                      }`}
+                  />
+                </button>
+                <span className={`text-xs font-medium ${formData.is_approved ? "text-green-600" : "text-gray-400"}`}>
+                  {formData.is_approved ? "Akan tampil di halaman review" : "Tersembunyi (pending)"}
+                </span>
+              </div>
 
-            <div className="flex gap-2 justify-end">
-              <button onClick={resetForm} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl">
-                Batal
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={saving}
-                className="flex items-center gap-2 bg-[#2F855A] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#276749] disabled:opacity-50"
-              >
-                {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                {editingId ? "Simpan Perubahan" : "Tambah Review"}
-              </button>
+              <div className="flex gap-3 pt-4">
+                <button onClick={resetForm} disabled={saving} className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors disabled:opacity-60">
+                  Batal
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={saving}
+                  className="flex-1 px-4 py-3 bg-[#2F855A] text-white rounded-xl font-medium hover:bg-[#276749] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {saving && <Loader2 size={18} className="animate-spin" />}
+                  {saving ? "Menyimpan..." : (editingId ? "Simpan Perubahan" : "Simpan")}
+                </button>
+              </div>
             </div>
           </div>
         </div>

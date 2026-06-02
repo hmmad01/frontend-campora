@@ -238,8 +238,17 @@ export const testimoniApi = {
   /** Admin: all reviews regardless of approval */
   adminGetAll: () => request<PaginatedResponse<TestimoniItem>>('/admin/testimonis'),
   /** Admin: create a review directly */
-  create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean }) =>
-    request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: JSON.stringify(data) }),
+  create: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; is_approved?: boolean; foto?: File | null }) => {
+    const fd = new FormData();
+    fd.append('nama_customer', data.nama_customer);
+    fd.append('rating', String(data.rating));
+    fd.append('isi_review', data.isi_review);
+    if (data.produk_disewa) fd.append('produk_disewa', data.produk_disewa);
+    if (data.kegiatan) fd.append('kegiatan', data.kegiatan);
+    if (data.is_approved !== undefined) fd.append('is_approved', data.is_approved ? '1' : '0');
+    if (data.foto) fd.append('foto_customer', data.foto);
+    return request<{ message: string; data: TestimoniItem }>('/admin/testimonis', { method: 'POST', body: fd });
+  },
   /** Customer: submit review with optional photo (FormData) */
   submitByCustomer: (data: { nama_customer: string; rating: number; isi_review: string; produk_disewa?: string; kegiatan?: string; foto?: File | null }) => {
     const fd = new FormData();
@@ -342,6 +351,8 @@ export interface TodayAvailability {
 export const ketersediaanApi = {
   /** Public: check stok tersedia semua barang untuk hari ini */
   checkToday: () => request<TodayAvailability[]>('/ketersediaan/today'),
+  /** Public: check stok tersedia untuk satu barang hari ini */
+  checkTodayById: (idBarang: number) => request<TodayAvailability>(`/ketersediaan/today/${idBarang}`),
   getAll: (idBarang?: number) => {
     const qs = idBarang ? `?id_barang=${idBarang}` : '';
     return request<PaginatedResponse<Ketersediaan>>(`/admin/ketersediaan${qs}`);
