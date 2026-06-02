@@ -24,12 +24,12 @@ export default function DetailPage() {
           testimoniApi.getAll(),
           ketersediaanApi.checkToday().catch(() => [] as any),
         ]);
-        
+
         const p = toProduct(barang);
-        
+
         setStokTotal(barang.stok_total);
 
-        
+
         let totalRating = 0;
         let count = 0;
         for (const t of testimoniRes.data) {
@@ -38,7 +38,7 @@ export default function DetailPage() {
             count += 1;
           }
         }
-        
+
         if (count > 0) {
           p.rating = Math.round((totalRating / count) * 10) / 10;
           p.reviews = count;
@@ -61,10 +61,10 @@ export default function DetailPage() {
         const today = new Date();
         const endDate = new Date(today);
         endDate.setDate(today.getDate() + days - 1);
-        
+
         const mulai = today.toISOString().split('T')[0];
         const selesai = endDate.toISOString().split('T')[0];
-        
+
         const res = await ketersediaanApi.check(Number(id), mulai, selesai);
         setStokTersedia(res.stok_tersedia);
         if (qty > res.stok_tersedia) {
@@ -108,9 +108,9 @@ export default function DetailPage() {
         <ArrowLeft size={16} /> Kembali ke Katalog
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 items-stretch">
 
-        <div className="rounded-3xl overflow-hidden shadow-md h-[350px] md:h-[460px] bg-gray-100">
+        <div className="rounded-3xl overflow-hidden shadow-md h-full min-h-[350px] md:min-h-[480px] bg-gray-100">
           {product.image ? (
             <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
           ) : (
@@ -118,7 +118,7 @@ export default function DetailPage() {
           )}
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col gap-4">
+        <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col justify-between gap-4 h-full">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-block bg-[#e5f5ed] text-[#1a8b5e] text-xs px-3 py-1 rounded-full font-medium">
               {product.category}

@@ -79,7 +79,7 @@ export function ProductCard({ product, variant = 'grid' }: Props) {
               {product.brand ?? ''}
             </span>
           ) : (
-            <span className="text-xs text-[#124756] font-medium hover:underline">Sewa</span>
+            <span className="text-[10px] text-[#124756] bg-[#e8f4f8] px-2 py-0.5 rounded-full font-medium tracking-wide uppercase">{product.brand ?? ''}</span>
           )}
         </div>
       </div>
